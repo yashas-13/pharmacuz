@@ -1,9 +1,9 @@
 from flask import Flask, jsonify
 
-from auth import auth_bp
-from manufacturer import manufacturer_bp
-from cfa import cfa_bp
-from super_stockist import super_stockist_bp
+from .auth import auth_bp
+from .manufacturer import manufacturer_bp
+from .cfa import cfa_bp
+from .super_stockist import super_stockist_bp
 
 app = Flask(__name__)
 

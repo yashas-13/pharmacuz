@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from auth import role_required
+from .auth import role_required
 
 super_stockist_bp = Blueprint('super_stockist', __name__)
 

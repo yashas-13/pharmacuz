@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from auth import role_required
+from .auth import role_required
 
 cfa_bp = Blueprint('cfa', __name__)
 
