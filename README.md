@@ -32,3 +32,6 @@ Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution an
    - `GET /super_stockist/requests` – list requests
 
 These endpoints illustrate how RBAC can be implemented. The data is stored in memory for demonstration purposes.
+
+### Sample Product Data
+An initial list of products scraped from [Cuzon Pharmaceuticals](https://cuzonpharma.com/products.html) is included in `backend/data/products.json`. This file is loaded when the manufacturer blueprint is initialized so `GET /manufacturer/products` will return this sample inventory by default.
