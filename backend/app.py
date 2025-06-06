@@ -1,11 +1,11 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 
 from auth import auth_bp
 from manufacturer import manufacturer_bp
 from cfa import cfa_bp
 from super_stockist import super_stockist_bp
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
 # Register blueprints
 app.register_blueprint(auth_bp)
@@ -15,7 +15,7 @@ app.register_blueprint(super_stockist_bp, url_prefix='/super_stockist')
 
 @app.route('/')
 def index():
-    return jsonify({'message': 'Pharmacuz API'})
+    return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
