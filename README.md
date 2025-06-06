@@ -1,18 +1,10 @@
 # Pharmacuz
 
-dqdva9-codex/summarize-pharmacuz-project-overview
-Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution and inventory management system. The backend now exposes basic authentication with role-based APIs for different users.
+Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution and inventory management system. The backend exposes basic authentication with role-based APIs for different users.
 
 ## Structure
 
 - `backend/` – Flask application exposing authenticated endpoints for manufacturer, CFA, and super stockist roles.
-=======
-Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution and inventory management system. This repository currently contains a simple Flask backend skeleton and placeholder directories for a frontend implementation.
-
-## Structure
-
-- `backend/` – contains a basic Flask application with placeholder endpoints for products and batches.
- main
 - `frontend/` – reserved for the progressive web app (PWA) implementation.
 
 ## Getting Started
@@ -26,8 +18,9 @@ Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution an
    python app.py
    ```
    The server will run on `http://localhost:5000`.
+   Visit this URL in your browser to see the login page served from
+   `frontend/index.html`.
 
-dqdva9-codex/summarize-pharmacuz-project-overview
 2. **Authentication**:
    Send a POST request to `/login` with JSON body `{"username": "admin", "password": "adminpass"}` (or other demo users) to receive a token.
    Use this token in the `Authorization` header (`Bearer <token>`) for subsequent requests.
@@ -40,9 +33,11 @@ dqdva9-codex/summarize-pharmacuz-project-overview
    - `POST /super_stockist/requests` – create stock request (super stockist role)
    - `GET /super_stockist/requests` – list requests
 
-These endpoints illustrate how RBAC can be implemented. The data is stored in memory for demonstration purposes.
-=======
-2. **Explore**: The app exposes simple JSON-based routes to demonstrate inventory data retrieval and batch creation.
+Each role is presented with its own dashboard when logging in:
+   - **Manufacturer** – manage products you supply.
+   - **CFA** – record and review goods receipt notes.
+   - **Super Stockist** – create and view stock requests.
+
+These endpoints and dashboards illustrate how RBAC can be implemented. The data is stored in memory for demonstration purposes.
 
 Further development will include full CRUD operations, authentication, role-based access, and offline-ready capabilities for the PWA.
-main
