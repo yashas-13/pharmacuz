@@ -35,9 +35,13 @@
         const data = await resp.json();
         const result = document.getElementById('result');
         if (resp.ok) {
+ t6ngmt-codex/modify-get_user_from_token-to-return-username-and-role
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.role);
             window.location.href = '/dashboard';
+=======
+            result.textContent = `Logged in as ${data.role}. Token: ${data.token}`;
+ main
         } else {
             result.textContent = data.error || 'Login failed';
         }
