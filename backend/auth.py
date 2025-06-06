@@ -27,11 +27,21 @@ def login():
 
 
 def get_user_from_token(token):
+    """Return username and role for a valid token.
+
+    The password field is intentionally omitted to avoid exposing
+    credentials. ``None`` is returned for invalid tokens or unknown users.
+    """
     username = TOKENS.get(token)
     if not username:
         return None
     user = USERS.get(username)
-    return {'username': username, **user} if user else None
+    if not user:
+        return None
+    return {
+        'username': username,
+        'role': user['role']
+    }
 
 
 def role_required(role):
