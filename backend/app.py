@@ -1,3 +1,6 @@
+f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
+import os
+ main
 from flask import Flask, jsonify, send_from_directory
 
 from auth import auth_bp
@@ -16,20 +19,24 @@ app.register_blueprint(super_stockist_bp, url_prefix='/super_stockist')
 @app.route('/')
 def index():
     return send_from_directory(app.static_folder, 'index.html')
- 84z3e7-codex/modify-get_user_from_token-to-return-username-and-role
+ f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
 
 
 
+
+ main
  main
 @app.route('/dashboard')
 def dashboard_page():
     """Serve the dashboard page for logged in users."""
     return send_from_directory(app.static_folder, 'dashboard.html')
-84z3e7-codex/modify-get_user_from_token-to-return-username-and-role
-=======
-=======
+ f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
+
+ main
  main
  main
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Allow overriding port via the PORT environment variable
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, port=port)
