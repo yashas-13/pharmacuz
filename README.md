@@ -18,6 +18,8 @@ Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution an
    python app.py
    ```
    The server will run on `http://localhost:5000`.
+   Visit this URL in your browser to see the login page served from
+   `frontend/index.html`.
 
 2. **Authentication**:
    Send a POST request to `/login` with JSON body `{"username": "admin", "password": "adminpass"}` (or other demo users) to receive a token.
