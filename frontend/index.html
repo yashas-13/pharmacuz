@@ -35,9 +35,16 @@
         const data = await resp.json();
         const result = document.getElementById('result');
         if (resp.ok) {
+ f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.role);
             window.location.href = '/dashboard';
+
+
+            result.textContent = `Logged in as ${data.role}. Token: ${data.token}`;
+ main
+ main
+ main
         } else {
             result.textContent = data.error || 'Login failed';
         }
