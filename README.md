@@ -18,6 +18,8 @@ Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution an
    python app.py
    ```
    The server will run on `http://localhost:5000`.
+   Visit this URL in your browser to see the login page served from
+   `frontend/index.html`.
 
 2. **Authentication**:
    Send a POST request to `/login` with JSON body `{"username": "admin", "password": "adminpass"}` (or other demo users) to receive a token.
@@ -31,15 +33,20 @@ Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution an
    - `POST /super_stockist/requests` – create stock request (super stockist role)
    - `GET /super_stockist/requests` – list requests
 
- t6ngmt-codex/modify-get_user_from_token-to-return-username-and-role
+ 84z3e7-codex/modify-get_user_from_token-to-return-username-and-role
+
+ main
 Each role is presented with its own dashboard when logging in:
    - **Manufacturer** – manage products you supply.
    - **CFA** – record and review goods receipt notes.
    - **Super Stockist** – create and view stock requests.
 
 These endpoints and dashboards illustrate how RBAC can be implemented. The data is stored in memory for demonstration purposes.
+ 84z3e7-codex/modify-get_user_from_token-to-return-username-and-role
+=======
 =======
 These endpoints illustrate how RBAC can be implemented. The data is stored in memory for demonstration purposes.
+ main
  main
 
 Further development will include full CRUD operations, authentication, role-based access, and offline-ready capabilities for the PWA.
