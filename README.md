@@ -31,6 +31,15 @@ Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution an
    - `POST /super_stockist/requests` – create stock request (super stockist role)
    - `GET /super_stockist/requests` – list requests
 
+ t6ngmt-codex/modify-get_user_from_token-to-return-username-and-role
+Each role is presented with its own dashboard when logging in:
+   - **Manufacturer** – manage products you supply.
+   - **CFA** – record and review goods receipt notes.
+   - **Super Stockist** – create and view stock requests.
+
+These endpoints and dashboards illustrate how RBAC can be implemented. The data is stored in memory for demonstration purposes.
+=======
 These endpoints illustrate how RBAC can be implemented. The data is stored in memory for demonstration purposes.
+ main
 
 Further development will include full CRUD operations, authentication, role-based access, and offline-ready capabilities for the PWA.

@@ -16,6 +16,15 @@ app.register_blueprint(super_stockist_bp, url_prefix='/super_stockist')
 @app.route('/')
 def index():
     return send_from_directory(app.static_folder, 'index.html')
+t6ngmt-codex/modify-get_user_from_token-to-return-username-and-role
+
+
+@app.route('/dashboard')
+def dashboard_page():
+    """Serve the dashboard page for logged in users."""
+    return send_from_directory(app.static_folder, 'dashboard.html')
+=======
+ main
 
 if __name__ == '__main__':
     app.run(debug=True)
