@@ -19,8 +19,8 @@ Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution an
    ```
    The server will run on `http://localhost:5000`.
    Visit this URL in your browser to see the login page served from
-   `frontend/index.html`.
-After logging in you will be redirected to `/dashboard` to see your role-specific features.
+   `frontend/index.html`. After logging in you will be redirected to
+   `/dashboard` to see your role-specific features.
 
 2. **Authentication**:
    Send a POST request to `/login` with JSON body `{"username": "admin", "password": "adminpass"}` (or other demo users) to receive a token.
