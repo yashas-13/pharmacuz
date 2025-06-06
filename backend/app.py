@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, send_from_directory
 
 from auth import auth_bp
@@ -24,4 +25,6 @@ def dashboard_page():
     return send_from_directory(app.static_folder, 'dashboard.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Allow overriding port via the PORT environment variable
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, port=port)
