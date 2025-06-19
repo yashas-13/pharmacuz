@@ -1,56 +1,138 @@
-# Pharmacuz
 
-Pharmacuz is a sample repository to demonstrate a pharmaceutical distribution and inventory management system. The backend exposes basic authentication with role-based APIs for different users.
+# 💊 PharmaCuz – Pharmaceutical Distribution and Inventory Management System
 
-## Structure
+**PharmaCuz** is a mobile-first, role-based supply chain management platform for pharmaceutical manufacturers, CFAs, stockists, and retailers. Built using a Python backend and modern frontends, it enables real-time visibility, order processing, and stock traceability across the distribution chain.
 
-- `backend/` – Flask application exposing authenticated endpoints for manufacturer, CFA, and super stockist roles.
-- `frontend/` – reserved for the progressive web app (PWA) implementation.
+---
 
-## Getting Started
+## 🚀 Features by User Role
 
-1. **Set up a Python environment**:
-   ```bash
-   cd backend
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   python app.py
-   ```
-   The server will run on `http://localhost:5000`.
-   Visit this URL in your browser to see the login page served from
- f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
-  
- main
+### 🏭 Manufacturer
+- Live production dashboard
+- Order volume analytics (daily/weekly/monthly)
+- Stock heatmaps across warehouses
+- Dispatch tracking & delay analytics
+- Scheme management (offers & BOGO)
+- Top-selling products chart
 
-2. **Authentication**:
-   Send a POST request to `/login` with JSON body `{"username": "admin", "password": "adminpass"}` (or other demo users) to receive a token.
-   Use this token in the `Authorization` header (`Bearer <token>`) for subsequent requests.
+### 🏢 CFA (Clearing & Forwarding Agent)
+- Daily task summary (to pack, dispatch, pending)
+- Live feed of dispatch status
+- Inventory movement tracking
+- Refill suggestions for fast-moving items
+- QR code scanner for verification
 
-3. **Role Endpoints**:
-   - `POST /manufacturer/products` – create a product (manufacturer role)
-   - `GET /manufacturer/products` – list products
-   - `POST /cfa/grn` – record goods receipt note (CFA role)
-   - `GET /cfa/grn` – list GRNs
-   - `POST /super_stockist/requests` – create stock request (super stockist role)
-   - `GET /super_stockist/requests` – list requests
+### 🏬 Stockist
+- Reorder suggestions and inventory tracking
+- Order placement with autosave cart
+- Order lifecycle timeline (requested → approved → transit → delivered)
+- Offer-based discounts and eligibility
+- Order history & receipts
 
- f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
+---
 
- main
- main
-Each role is presented with its own dashboard when logging in:
-   - **Manufacturer** – manage products you supply.
-   - **CFA** – record and review goods receipt notes.
-   - **Super Stockist** – create and view stock requests.
+## 🧱 Project Structure
 
-These endpoints and dashboards illustrate how RBAC can be implemented. The data is stored in memory for demonstration purposes.
- f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
+```
 
+pharmacuz/
+├── backend/               # Python + FastAPI or Flask backend
+│   ├── models/            # ORM Models (SQLAlchemy / Pydantic)
+│   ├── controllers/       # Logic layer
+│   ├── routes/            # API endpoints
+│   └── middleware/        # JWT Auth, Role guards
+├── frontend/
+│   ├── mobman.html        # Manufacturer Dashboard (Mobile UI)
+│   ├── cfa.html           # CFA Dashboard
+│   ├── stockist.html      # Stockist Dashboard
+│   └── assets/            # CSS, JS, Chart.js, Icons
+├── database/
+│   ├── schema.sql         # DB schema
+│   └── seed.sql           # Seed data (products, users)
+├── product-list.txt       # Master product names (CUZON Pharma)
+├── README.md
 
-These endpoints illustrate how RBAC can be implemented. The data is stored in memory for demonstration purposes.
- main
- main
- main
+````
 
-Further development will include full CRUD operations, authentication, role-based access, and offline-ready capabilities for the PWA.
+---
+
+## ⚙️ Installation
+
+### 🔧 Backend (FastAPI or Flask)
+
+```bash
+# Setup virtual environment
+python -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the server
+uvicorn app.main:app --reload
+````
+
+### 🌐 Frontend
+
+Simply open any of the HTML dashboards (e.g., `mobman.html`) in the browser for local UI preview.
+
+---
+
+## 📦 Product List (CUZON Pharma)
+
+Some featured SKUs include:
+
+* **PANSZ-DSR** – Capsules; 10×10 Alu–Alu
+* **XIMPRAZ** – Tablets; 10×10 Alu–Alu
+* **SOOKRAL SUSP** – Suspension; 100 ml
+* **ZEKCLAV-DS** – Syrup; 30 ml
+* **GLIMCUZ-M GP 1/2** – Tablets; 10×10
+* **ZEKMOL-650 TABLETS** – Tablets; 10×10
+
+Full list in [`product name.txt`](./product%20name.txt)
+
+---
+
+## 📊 Tech Stack
+
+| Layer      | Technology                            |
+| ---------- | ------------------------------------- |
+| Backend    | Python (FastAPI / Flask)              |
+| Frontend   | HTML5 + CSS + JS (Vanilla + Chart.js) |
+| Database   | MySQL (via SQLAlchemy ORM)            |
+| Auth       | JWT + Role-based access               |
+| Deployment | Hostinger VPS / PWA Mode              |
+
+---
+
+## 🧪 API Testing
+
+```bash
+# Sample CURL to authenticate
+curl -X POST http://localhost:8000/api/auth/login -d 'username=admin&password=admin'
+
+# Get stockist orders
+curl -H "Authorization: Bearer <JWT>" http://localhost:8000/api/orders/stockist
+```
+
+---
+
+## 📥 Contributing
+
+* Fork and clone the repo
+* Add your module under `backend/controllers/`
+* Format code with `black`, and document APIs
+* Pull Requests must include test validation and updated OpenAPI docs
+
+---
+
+## 🛡️ License
+
+This project is © 2025 \[Pravidhi Solutions]. All rights reserved.
+
+```
+
+---
+
+Let me know if you'd like to autogenerate OpenAPI documentation, Docker setup, or CI/CD deployment steps.
+```
