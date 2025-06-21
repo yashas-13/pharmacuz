@@ -593,21 +593,21 @@
                             <strong>Product X</strong>
                             <p class="suggestion-qty">Suggested: 20 units (due in 7 days)</p>
                         </div>
-                        <button class="add-btn" onclick="alert('Product X added to cart!')">Add to Cart</button>
+                        <button class="add-btn" data-product="Product X">Add to Cart</button>
                     </div>
                     <div class="reorder-suggestion-item">
                         <div class="product-info">
                             <strong>Product Y</strong>
                             <p class="suggestion-qty">Suggested: 15 units (due in 10 days)</p>
                         </div>
-                        <button class="add-btn" onclick="alert('Product Y added to cart!')">Add to Cart</button>
+                        <button class="add-btn" data-product="Product Y">Add to Cart</button>
                     </div>
                     <div class="reorder-suggestion-item">
                         <div class="product-info">
                             <strong>Product Z</strong>
                             <p class="suggestion-qty">Suggested: 10 units (due in 15 days)</p>
                         </div>
-                        <button class="add-btn" onclick="alert('Product Z added to cart!')">Add to Cart</button>
+                        <button class="add-btn" data-product="Product Z">Add to Cart</button>
                     </div>
                 </div>
             </div>
@@ -756,14 +756,25 @@
 
             tabButtons.forEach(button => {
                 button.addEventListener('click', (event) => {
-                    // Remove active class from all buttons and content
                     tabButtons.forEach(btn => btn.classList.remove('active'));
                     tabContents.forEach(content => content.classList.remove('active'));
-
-                    // Add active class to clicked button and corresponding content
                     const targetTab = event.target.dataset.tab;
                     event.target.classList.add('active');
                     document.getElementById(targetTab).classList.add('active');
+                });
+            });
+
+            const token = localStorage.getItem('token');
+            document.querySelectorAll('.add-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const product = btn.dataset.product;
+                    const payload = { product, quantity: 1 };
+                    await fetch('/api/super_stockist/requests', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify(payload)
+                    });
+                    alert(`${product} added to cart`);
                 });
             });
         });

@@ -451,6 +451,15 @@
                         <button>Details</button>
                     </div>
                 </div>
+                <div class="list-section">
+                    <h3>Goods Receipt Notes</h3>
+                    <ul id="grnList"></ul>
+                    <form id="grnForm" class="mt-2">
+                        <input type="text" id="grnBatch" placeholder="Batch" required>
+                        <input type="number" id="grnQty" placeholder="Qty" required>
+                        <button type="submit">Add</button>
+                    </form>
+                </div>
             </div>
 
             <div id="history" class="tab-content">
@@ -546,16 +555,44 @@
 
             tabButtons.forEach(button => {
                 button.addEventListener('click', (event) => {
-                    // Remove active class from all buttons and content
                     tabButtons.forEach(btn => btn.classList.remove('active'));
                     tabContents.forEach(content => content.classList.remove('active'));
-
-                    // Add active class to clicked button and corresponding content
                     const targetTab = event.target.dataset.tab;
                     event.target.classList.add('active');
                     document.getElementById(targetTab).classList.add('active');
                 });
             });
+
+            const token = localStorage.getItem('token');
+
+            async function loadGrns() {
+                const resp = await fetch('/api/cfa/grn', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await resp.json();
+                const list = document.getElementById('grnList');
+                list.innerHTML = '';
+                data.forEach(g => {
+                    const li = document.createElement('li');
+                    li.textContent = `${g.batch} - ${g.quantity}`;
+                    list.appendChild(li);
+                });
+            }
+
+            document.getElementById('grnForm').addEventListener('submit', async e => {
+                e.preventDefault();
+                const payload = { batch: document.getElementById('grnBatch').value, quantity: document.getElementById('grnQty').value };
+                const resp = await fetch('/api/cfa/grn', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+                if (resp.ok) {
+                    document.getElementById('grnBatch').value = '';
+                    document.getElementById('grnQty').value = '';
+                    await loadGrns();
+                }
+            });
+
+            loadGrns();
         });
     </script>
 </body>

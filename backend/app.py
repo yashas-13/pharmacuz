@@ -1,42 +1,28 @@
-f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
 import os
- main
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, send_from_directory
 
-from auth import auth_bp
-from manufacturer import manufacturer_bp
-from cfa import cfa_bp
-from super_stockist import super_stockist_bp
+from backend.auth import auth_bp
+from backend.routes.manufacturer import manufacturer_bp
+from backend.routes.cfa import cfa_bp
+from backend.routes.super_stockist import super_stockist_bp
+from backend.database import engine
+from backend.models import Base
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
-# Register blueprints
-app.register_blueprint(auth_bp)
-app.register_blueprint(manufacturer_bp, url_prefix='/manufacturer')
-app.register_blueprint(cfa_bp, url_prefix='/cfa')
-app.register_blueprint(super_stockist_bp, url_prefix='/super_stockist')
+# Create tables if they don't exist
+Base.metadata.create_all(bind=engine)
+
+# Register blueprints under /api prefix
+app.register_blueprint(auth_bp, url_prefix='/api/auth')
+app.register_blueprint(manufacturer_bp, url_prefix='/api/manufacturer')
+app.register_blueprint(cfa_bp, url_prefix='/api/cfa')
+app.register_blueprint(super_stockist_bp, url_prefix='/api/super_stockist')
 
 @app.route('/')
 def index():
     return send_from_directory(app.static_folder, 'index.html')
- f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
-
-
-
-
- main
- main
-@app.route('/dashboard')
-def dashboard_page():
-    """Serve the dashboard page for logged in users."""
-    return send_from_directory(app.static_folder, 'dashboard.html')
- f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
-
- main
- main
- main
 
 if __name__ == '__main__':
-    # Allow overriding port via the PORT environment variable
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8000))
     app.run(debug=True, port=port)
