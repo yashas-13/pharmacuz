@@ -1408,6 +1408,7 @@
             loadDownstreamStockVisibility();
             loadCFAAuditLogs();
             populateProductDropdownsCFA();
+            document.getElementById('pricingStateRegionCFA').addEventListener('change', loadCFAPricing);
         });
 
         function openModal(modalId) {
@@ -1552,18 +1553,25 @@
         }
 
         // Load Pricing (View Only for CFA)
-        function loadCFAPricing() {
+        async function loadCFAPricing() {
             const body = document.getElementById('cfaPricingTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyCFAData.pricing.forEach(p => {
+            let url = '/api/pricing';
+            const region = document.getElementById('pricingStateRegionCFA').value;
+            if (region && region !== 'all') {
+                url += `?region=${encodeURIComponent(region)}`;
+            }
+            const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(p => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${p.product_id}</td>
                     <td>${p.product_name}</td>
-                    <td>${p.state_region}</td>
-                    <td>${p.ptr.toFixed(2)}</td>
-                    <td>${p.pts.toFixed(2)}</td>
+                    <td>${p.region}</td>
+                    <td>${p.ptr}</td>
+                    <td>${p.pts}</td>
                     <td>${p.effective_date}</td>
                 `;
                 body.appendChild(row);

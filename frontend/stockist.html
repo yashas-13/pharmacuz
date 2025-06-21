@@ -1222,6 +1222,7 @@
             loadStockistPricing();
             fetchMyStock();
             loadStockistAuditLogs();
+            document.getElementById('pricingStateRegionStockist').addEventListener('change', loadStockistPricing);
         });
 
         // Modals are not used for Stockist in this simplified version, as forms are directly on page sections.
@@ -1352,18 +1353,25 @@
         }
 
         // Load Pricing (View Only for Stockist)
-        function loadStockistPricing() {
+        async function loadStockistPricing() {
             const body = document.getElementById('stockistPricingTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyStockistData.pricing.forEach(p => {
+            let url = '/api/pricing';
+            const region = document.getElementById('pricingStateRegionStockist').value;
+            if (region && region !== 'all') {
+                url += `?region=${encodeURIComponent(region)}`;
+            }
+            const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(p => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${p.product_id}</td>
                     <td>${p.product_name}</td>
-                    <td>${p.state_region}</td>
-                    <td>${p.ptr.toFixed(2)}</td>
-                    <td>${p.pts.toFixed(2)}</td>
+                    <td>${p.region}</td>
+                    <td>${p.ptr}</td>
+                    <td>${p.pts}</td>
                     <td>${p.effective_date}</td>
                 `;
                 body.appendChild(row);
