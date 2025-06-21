@@ -6,6 +6,7 @@ from backend.routes.manufacturer import manufacturer_bp
 from backend.routes.cfa import cfa_bp
 from backend.routes.super_stockist import super_stockist_bp
 from backend.routes.order import order_bp
+from backend.routes.product import product_bp
 from backend.database import engine, SessionLocal
 from backend.models import Base
 from backend.models.order import Order  # ensure table registration
@@ -69,6 +70,7 @@ app.register_blueprint(manufacturer_bp, url_prefix="/api/manufacturer")
 app.register_blueprint(cfa_bp, url_prefix="/api/cfa")
 app.register_blueprint(super_stockist_bp, url_prefix="/api/super_stockist")
 app.register_blueprint(order_bp, url_prefix="/api")
+app.register_blueprint(product_bp, url_prefix="/api")
 
 
 @app.route("/")

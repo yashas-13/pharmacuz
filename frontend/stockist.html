@@ -1106,13 +1106,15 @@
     </nav>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script>
+        let token = '';
         // Basic JS for sidebar navigation and modal placeholders
         document.addEventListener('DOMContentLoaded', function () {
-            const token = localStorage.getItem('token');
-            const role = localStorage.getItem('role');
-            // Simulate Super Stockist role for this page
-            localStorage.setItem('role', 'super_stockist'); 
+            token = localStorage.getItem('token');
             const userRole = localStorage.getItem('role');
+            if (!token || userRole !== 'super_stockist') {
+                window.location.href = 'index.html';
+                return;
+            }
 
             const navLinks = document.querySelectorAll('.sidebar .nav-link');
             const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
@@ -1213,6 +1215,13 @@
                 localStorage.removeItem('stockistLastActiveSection'); // Clear Stockist specific state
                 window.location.href = 'index.html'; // Redirect to login/home page
             });
+
+            fetchProducts();
+            fetchOrders();
+            loadStockistBatches();
+            loadStockistPricing();
+            loadStockistMyStock();
+            loadStockistAuditLogs();
         });
 
         // Modals are not used for Stockist in this simplified version, as forms are directly on page sections.
@@ -1228,11 +1237,7 @@
 
         // Mock API Calls and Data Loading for Super Stockist Dashboard
         const dummyStockistData = {
-            products: [
-                { id: 'PROD001', name: 'Paracetamol 500mg', description: 'Pain relief', hsn: '30049099', gst: 12, composition: 'Paracetamol', category: 'Analgesic' },
-                { id: 'PROD002', name: 'Amoxicillin 250mg', description: 'Antibiotic', hsn: '30041010', gst: 12, composition: 'Amoxicillin', category: 'Antibiotic' },
-                { id: 'PROD003', name: 'Antacid Liquid', description: 'Acidity relief', hsn: '30045090', gst: 5, composition: 'Aluminium Hydroxide', category: 'Antacid' }
-            ],
+            products: [],
             batches: [
                 { id: 'B001XYZ', product_id: 'PROD001', mfg_date: '2024-01-15', exp_date: '2026-01-14', mrp: 50.00, quantity: 5000 }, // Qty here is approximate from CFA for view
                 { id: 'B002ABC', product_id: 'PROD002', mfg_date: '2024-03-01', exp_date: '2026-03-01', mrp: 80.00, quantity: 2000 }
@@ -1241,10 +1246,7 @@
                 { product_id: 'PROD001', product_name: 'Paracetamol 500mg', state_region: 'Maharashtra', ptr: 35.00, pts: 40.00, effective_date: '2024-04-01' },
                 { product_id: 'PROD002', product_name: 'Amoxicillin 250mg', state_region: 'Maharashtra', ptr: 70.00, pts: 75.00, effective_date: '2024-05-01' }
             ],
-            myOrders: [
-                { id: 'ORD101', to_cfa: 'CFA01 - Mumbai', product_id: 'PROD001', product_name: 'Paracetamol 500mg', quantity: 200, order_date: '2025-06-19', status: 'Pending Approval' },
-                { id: 'ORD102', to_cfa: 'CFA01 - Mumbai', product_id: 'PROD002', product_name: 'Amoxicillin 250mg', quantity: 50, order_date: '2025-06-18', status: 'Shipped' }
-            ],
+            myOrders: [],
             myStock: [
                 { product_id: 'PROD001', product_name: 'Paracetamol 500mg', batch_no: 'B001XYZ', quantity: 150, exp_date: '2026-01-14', last_updated: '2025-06-20', status: 'Healthy' },
                 { product_id: 'PROD002', product_name: 'Amoxicillin 250mg', batch_no: 'B002ABC', quantity: 30, exp_date: '2026-03-01', last_updated: '2025-06-20', status: 'Low Stock' },
@@ -1264,6 +1266,21 @@
             ]
         };
 
+        async function fetchProducts() {
+            const resp = await fetch('/api/products', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await resp.json();
+            dummyStockistData.products = data;
+            populateProductDropdownsStockist();
+            loadStockistProducts();
+        }
+
+        async function fetchOrders() {
+            const resp = await fetch('/api/orders', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await resp.json();
+            dummyStockistData.myOrders = data;
+            loadMyOrders();
+        }
+
         // Populate dropdowns with products for order placement
         function populateProductDropdownsStockist() {
             const productSelect = document.getElementById('orderProductId');
@@ -1271,7 +1288,7 @@
                 productSelect.innerHTML = '';
                 dummyStockistData.products.forEach(p => {
                     const option = document.createElement('option');
-                    option.value = p.id;
+                    option.value = p.name;
                     option.textContent = p.name;
                     productSelect.appendChild(option);
                 });
@@ -1337,22 +1354,26 @@
         }
 
         // Load My Placed Orders (Stockist to CFA)
-        function loadMyOrders() {
+        async function loadMyOrders() {
             const body = document.getElementById('myOrdersTableBody');
             if (!body) return;
+            const resp = await fetch('/api/orders', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await resp.json();
+            dummyStockistData.myOrders = data;
             body.innerHTML = '';
-            dummyStockistData.myOrders.forEach(o => {
+            data.forEach(o => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${o.id}</td>
-                    <td>${o.to_cfa}</td>
-                    <td>${o.product_name}</td>
+                    <td>-</td>
+                    <td>${o.product}</td>
                     <td>${o.quantity}</td>
-                    <td>${o.order_date}</td>
+                    <td>-</td>
                     <td>${o.status}</td>
                 `;
                 body.appendChild(row);
             });
+            document.getElementById('total-orders-placed').textContent = data.length;
         }
 
         // Load Stockist's Own Stock
@@ -1396,25 +1417,30 @@
             });
         }
 
-        // Form submissions (simulated)
-        document.getElementById('placeOrderForm').addEventListener('submit', function(e) {
+        // Form submissions
+        document.getElementById('placeOrderForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const productId = document.getElementById('orderProductId').value;
+            const product = document.getElementById('orderProductId').value;
             const quantity = document.getElementById('orderQuantity').value;
-            alert(`Order placed to CFA: Product ${productId}, Quantity ${quantity} (Simulated)`);
-            // In real app: add this to myOrders and refresh
-            loadMyOrders(); // Refresh table after simulated order
+            const resp = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ product, quantity: parseInt(quantity) })
+            });
+            if (resp.ok) {
+                await loadMyOrders();
+                alert('Order placed successfully');
+            } else {
+                const data = await resp.json();
+                alert(data.error || 'Failed to place order');
+            }
         });
 
 
-        // Initialize data loads on page load
-        loadStockistProducts();
-        loadStockistBatches();
-        loadStockistPricing();
-        loadMyOrders();
-        loadStockistMyStock();
-        loadStockistAuditLogs();
-        populateProductDropdownsStockist(); // For order form
+
 
         // Placeholder for chart rendering on Stockist dashboard
         function renderStockistCharts() {
