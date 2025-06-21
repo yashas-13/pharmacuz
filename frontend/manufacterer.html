@@ -771,6 +771,7 @@
                 <li><a href="#pack-configs" class="nav-link" data-section="pack-configs-section"><i class="fas fa-box-open"></i> Pack Configs</a></li>
                 <li><a href="#pricing-catalogs" class="nav-link" data-section="pricing-catalogs-section"><i class="fas fa-tags"></i> Pricing Catalogs</a></li>
                 <li><a href="#cfa-management" class="nav-link" data-section="cfa-management-section"><i class="fas fa-warehouse"></i> CFA Management</a></li>
+                <li><a href="#order-approval" class="nav-link" data-section="order-approval-section"><i class="fas fa-clipboard-check"></i> Orders</a></li>
                 <li><a href="#stock-visibility" class="nav-link" data-section="stock-visibility-section"><i class="fas fa-eye"></i> Stock Visibility</a></li>
                 <li><a href="#audit-trail" class="nav-link" data-section="audit-trail-section"><i class="fas fa-clipboard-list"></i> Audit & Compliance</a></li>
                 <li><a href="#recall-trigger" class="nav-link" data-section="recall-trigger-section"><i class="fas fa-exclamation-triangle"></i> Recall Trigger</a></li>
@@ -1056,6 +1057,15 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </section>
+
+            <section id="order-approval-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Pending Orders</h3>
+                    </div>
+                    <div id="orderList"></div>
                 </div>
             </section>
 
@@ -1429,6 +1439,10 @@
             <i class="fas fa-box-open"></i>
             <span>Products</span>
         </a>
+        <a href="#order-approval" class="bottom-nav-item" data-section="order-approval-section">
+            <i class="fas fa-clipboard-check"></i>
+            <span>Orders</span>
+        </a>
         <a href="#user-access" class="bottom-nav-item" data-section="user-access-section">
             <i class="fas fa-users-cog"></i>
             <span>Users</span>
@@ -1623,7 +1637,28 @@
             }
         });
 
+        async function loadOrders() {
+            const resp = await fetch('/api/orders?status=requested', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await resp.json();
+            const list = document.getElementById('orderList');
+            list.innerHTML = '';
+            data.forEach(o => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `<div><strong>#${o.id}</strong> - ${o.product}<p>${o.quantity} units | <span class="status-chip">Requested</span></p></div>`;
+                const btn = document.createElement('button');
+                btn.textContent = 'Approve';
+                btn.addEventListener('click', async () => {
+                    await fetch(`/api/orders/${o.id}/approve`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                    await loadOrders();
+                });
+                div.appendChild(btn);
+                list.appendChild(div);
+            });
+        }
+
         loadProducts();
+        loadOrders();
 
     </script>
 </body>

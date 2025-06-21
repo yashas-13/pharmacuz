@@ -45,6 +45,7 @@ def get_user_from_token(token):
 
 
 def role_required(role):
+    """Allow only one specific role."""
     def decorator(func):
         def wrapper(*args, **kwargs):
             auth_header = request.headers.get('Authorization')
@@ -55,6 +56,26 @@ def role_required(role):
             if not user:
                 return jsonify({'error': 'Invalid token'}), 401
             if user['role'] != role:
+                return jsonify({'error': 'Forbidden'}), 403
+            request.user = user
+            return func(*args, **kwargs)
+        wrapper.__name__ = func.__name__
+        return wrapper
+    return decorator
+
+
+def roles_required(*roles):
+    """Allow any user whose role is in ``roles`` list."""
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            auth_header = request.headers.get('Authorization')
+            if not auth_header or not auth_header.startswith('Bearer '):
+                return jsonify({'error': 'Missing token'}), 401
+            token = auth_header.split(' ')[1]
+            user = get_user_from_token(token)
+            if not user:
+                return jsonify({'error': 'Invalid token'}), 401
+            if user['role'] not in roles:
                 return jsonify({'error': 'Forbidden'}), 403
             request.user = user
             return func(*args, **kwargs)
