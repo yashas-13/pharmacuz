@@ -58,6 +58,57 @@ def products():
     return jsonify(result)
 
 
+@manufacturer_bp.route("/products/<int:product_id>", methods=["GET", "PUT", "DELETE"])
+@role_required("manufacturer")
+def manage_product(product_id: int):
+    """Retrieve, update or delete a single product."""
+    session: Session = SessionLocal()
+    product = session.query(Product).get(product_id)
+    if not product:
+        session.close()
+        return jsonify({"error": "Product not found"}), 404
+
+    if request.method == "GET":
+        result = {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "hsn": product.hsn,
+            "gst": product.gst,
+            "composition": product.composition,
+            "category": product.category,
+        }
+        session.close()
+        return jsonify(result)
+
+    if request.method == "PUT":
+        data = request.json or {}
+        product.name = data.get("name", product.name)
+        product.description = data.get("description", product.description)
+        product.hsn = data.get("hsn", product.hsn)
+        product.gst = data.get("gst", product.gst)
+        product.composition = data.get("composition", product.composition)
+        product.category = data.get("category", product.category)
+        session.commit()
+        result = {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "hsn": product.hsn,
+            "gst": product.gst,
+            "composition": product.composition,
+            "category": product.category,
+        }
+        session.close()
+        return jsonify(result)
+
+    # DELETE
+    session.delete(product)
+    session.commit()
+    session.close()
+    return jsonify({"message": "deleted"})
+
+
 @manufacturer_bp.route("/batches", methods=["GET", "POST"])
 @role_required("manufacturer")
 def batches():
@@ -109,7 +160,7 @@ def batches():
     return jsonify(result)
 
 
-@manufacturer_bp.route("/batches/<int:batch_id>", methods=["PUT"])
+@manufacturer_bp.route("/batches/<int:batch_id>", methods=["PUT", "DELETE"])
 @role_required("manufacturer")
 def update_batch(batch_id):
     session: Session = SessionLocal()
@@ -117,6 +168,12 @@ def update_batch(batch_id):
     if not batch:
         session.close()
         return jsonify({"error": "Batch not found"}), 404
+    if request.method == "DELETE":
+        session.delete(batch)
+        session.commit()
+        session.close()
+        return jsonify({"message": "deleted"})
+
     data = request.json or {}
     batch.batch_no = data.get("batch_no", batch.batch_no)
     batch.product_id = data.get("product_id", batch.product_id)
@@ -183,7 +240,7 @@ def pack_configs():
     return jsonify(result)
 
 
-@manufacturer_bp.route("/pack-configs/<int:config_id>", methods=["PUT"])
+@manufacturer_bp.route("/pack-configs/<int:config_id>", methods=["PUT", "DELETE"])
 @role_required("manufacturer")
 def update_pack_config(config_id):
     session: Session = SessionLocal()
@@ -191,6 +248,12 @@ def update_pack_config(config_id):
     if not config:
         session.close()
         return jsonify({"error": "Pack config not found"}), 404
+    if request.method == "DELETE":
+        session.delete(config)
+        session.commit()
+        session.close()
+        return jsonify({"message": "deleted"})
+
     data = request.json or {}
     config.product_id = data.get("product_id", config.product_id)
     config.pack_type = data.get("pack_type", config.pack_type)
