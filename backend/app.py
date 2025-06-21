@@ -9,6 +9,8 @@ from backend.routes.order import order_bp
 from backend.database import engine
 from backend.models import Base
 from backend.models.order import Order  # ensure table registration
+from backend.models.batch import Batch
+from backend.models.pack_config import PackConfig
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
