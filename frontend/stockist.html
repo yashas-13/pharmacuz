@@ -806,9 +806,9 @@
                                 <div class="metric-description">Based on available inventory.</div>
                             </div>
                         </div>
-                        <div class="dashboard-card alert-card warning">
+                        <div id="lowStockAlert" class="dashboard-card alert-card warning" style="display:none;">
                             <span class="alert-icon"><i class="fas fa-exclamation-triangle"></i></span>
-                            <p><strong>Alert:</strong> High demand expected for **Product X** next week. Current stock is low (10 units)!</p>
+                            <p id="lowStockText"></p>
                         </div>
                         <div class="dashboard-card chart-card">
                             <div class="card-header">
@@ -1286,6 +1286,16 @@
             const data = await resp.json();
             dummyStockistData.myStock = data;
             loadStockistMyStock();
+            const alertBox = document.getElementById('lowStockAlert');
+            const alertText = document.getElementById('lowStockText');
+            const lowItems = data.filter(i => i.low_stock);
+            if (lowItems.length > 0) {
+                const names = lowItems.map(i => i.product_name || i.product_id).join(', ');
+                alertText.textContent = `Low stock for: ${names}`;
+                alertBox.style.display = 'flex';
+            } else {
+                alertBox.style.display = 'none';
+            }
         }
 
         // Populate dropdowns with products for order placement

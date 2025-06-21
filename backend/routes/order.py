@@ -6,6 +6,8 @@ from backend.database import SessionLocal
 from backend.models.order import Order
 from backend.models.product import Product
 from backend.models.inventory import Inventory
+from backend.models.batch import Batch
+from backend.models.audit_log import AuditLog
 
 
 def _parse_iso_date(value):
@@ -15,6 +17,13 @@ def _parse_iso_date(value):
         except ValueError:
             return None
     return value
+
+
+def log_event(session: Session, event_type: str, details: str):
+    """Create an audit log entry."""
+    log = AuditLog(event_type=event_type, details=details)
+    session.add(log)
+    session.commit()
 
 order_bp = Blueprint('order', __name__)
 
@@ -44,6 +53,7 @@ def orders():
         )
         session.add(order)
         session.commit()
+        log_event(session, 'order_created', f'Order {order.id} created by {request.user["username"]}')
         result = {
             'id': order.id,
             'product': order.product,
@@ -101,6 +111,7 @@ def request_approval(order_id):
     order.status = 'approval_requested'
     order.target = 'manufacturer'
     session.commit()
+    log_event(session, 'order_forwarded', f'Order {order.id} sent for approval')
     result = {
         'id': order.id,
         'product': order.product,
@@ -128,6 +139,7 @@ def approve_order(order_id):
         return jsonify({'error': 'Order cannot be approved'}), 400
     order.status = 'approved'
     session.commit()
+    log_event(session, 'order_approved', f'Order {order.id} approved')
     result = {
         'id': order.id,
         'product': order.product,
@@ -170,6 +182,10 @@ def dispatch_order(order_id):
         session.close()
         return jsonify({'error': 'Product not found'}), 400
 
+    if not session.query(Batch).filter_by(product_id=product.id, batch_no=batch_no).first():
+        session.close()
+        return jsonify({'error': 'Invalid batch for product'}), 400
+
     inventory = session.query(Inventory).filter_by(
         location=request.user['username'],
         product_id=product.id,
@@ -180,12 +196,14 @@ def dispatch_order(order_id):
         return jsonify({'error': 'Insufficient stock'}), 400
 
     inventory.quantity -= order.quantity
+    log_event(session, 'inventory_deducted', f'{order.quantity} units of product {product.id} batch {batch_no} deducted from {inventory.location}')
 
     order.status = 'dispatched'
     order.batch_no = batch_no
     order.mfg_date = mfg_date
     order.exp_date = exp_date
     session.commit()
+    log_event(session, 'order_dispatched', f'Order {order.id} dispatched with batch {batch_no}')
     result = {
         'id': order.id,
         'product': order.product,
@@ -223,6 +241,7 @@ def receive_order(order_id):
         ).first()
         if inventory:
             inventory.quantity += order.quantity
+            log_event(session, 'inventory_added', f'{order.quantity} units of product {product.id} batch {order.batch_no} received at {inventory.location}')
         else:
             inventory = Inventory(
                 location=request.user['username'],
@@ -233,8 +252,10 @@ def receive_order(order_id):
                 quantity=order.quantity
             )
             session.add(inventory)
+            log_event(session, 'inventory_added', f'{order.quantity} units of product {product.id} batch {order.batch_no} added to {inventory.location}')
     order.status = 'received'
     session.commit()
+    log_event(session, 'order_received', f'Order {order.id} received by {request.user["username"]}')
     result = {
         'id': order.id,
         'product': order.product,
@@ -263,6 +284,7 @@ def acknowledge_order(order_id):
         return jsonify({'error': 'Order cannot be acknowledged'}), 400
     order.status = 'acknowledged'
     session.commit()
+    log_event(session, 'order_acknowledged', f'Order {order.id} acknowledged by {request.user["username"]}')
     result = {
         'id': order.id,
         'product': order.product,
