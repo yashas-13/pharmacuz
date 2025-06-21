@@ -80,6 +80,18 @@ Simply open any of the HTML dashboards (e.g., `mobman.html`) in the browser for 
 
 ## 📦 Product List (CUZON Pharma)
 
+
+
+ { "name": "PANSZ-DSR", "desc": "Pantoprazole 40mg + Domperidone 30mg SR (Capsules)" },
+  { "name": "XIMPRAZ", "desc": "Esomeprazole 40mg + Domperidone 30mg SR (Capsules)" },
+  { "name": "SOOKRAL SUSP", "desc": "Sucralfate 500mg + Oxetacaine 10mg Suspension (100ml)" },
+  { "name": "ZEKMOL 250 SUSP", "desc": "Paracetamol 250mg Suspension (60ml)" },
+  { "name": "ZOACE-P", "desc": "Aceclofenac 100mg + Paracetamol 325mg (Tablet)" },
+  { "name": "ZOACE-SP", "desc": "Aceclofenac + Paracetamol + Serratiopeptidase (Tablet)" },
+  { "name": "CAVIZIC", "desc": "Calcium Citrate + Magnesium + Vitamin K2 + D3 etc." },
+  { "name": "ZIFLOZIN", "desc": "Dapagliflozin 10mg (Tablet)" }
+
+
 Some featured SKUs include:
 
 * **PANSZ-DSR** – Capsules; 10×10 Alu–Alu
@@ -88,6 +100,8 @@ Some featured SKUs include:
 * **ZEKCLAV-DS** – Syrup; 30 ml
 * **GLIMCUZ-M GP 1/2** – Tablets; 10×10
 * **ZEKMOL-650 TABLETS** – Tablets; 10×10
+
+
 
 Full list in [`product name.txt`](./product%20name.txt)
 
