@@ -1389,15 +1389,130 @@
     <div id="addBatchModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>Add New Batch</h3><span class="close-btn" onclick="closeModal('addBatchModal')">&times;</span></div>
-            <p>Form for adding new batch goes here...</p>
-            <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('addBatchModal')">Cancel</button><button type="submit" class="btn btn-success">Save Batch</button></div>
+            <form id="batchForm">
+                <div class="form-group">
+                    <label for="batchProductId">Product ID:</label>
+                    <input type="number" id="batchProductId" required>
+                </div>
+                <div class="form-group">
+                    <label for="batchNo">Batch No:</label>
+                    <input type="text" id="batchNo" required>
+                </div>
+                <div class="form-group">
+                    <label for="mfgDate">Mfg Date:</label>
+                    <input type="date" id="mfgDate">
+                </div>
+                <div class="form-group">
+                    <label for="expDate">Exp Date:</label>
+                    <input type="date" id="expDate">
+                </div>
+                <div class="form-group">
+                    <label for="batchMRP">MRP:</label>
+                    <input type="number" step="0.01" id="batchMRP">
+                </div>
+                <div class="form-group">
+                    <label for="batchQty">Quantity:</label>
+                    <input type="number" id="batchQty">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addBatchModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Batch</button>
+                </div>
+            </form>
         </div>
     </div>
+
+    <div id="editBatchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Edit Batch</h3><span class="close-btn" onclick="closeModal('editBatchModal')">&times;</span></div>
+            <form id="editBatchForm">
+                <input type="hidden" id="editBatchId">
+                <div class="form-group">
+                    <label for="editBatchProductId">Product ID:</label>
+                    <input type="number" id="editBatchProductId" required>
+                </div>
+                <div class="form-group">
+                    <label for="editBatchNo">Batch No:</label>
+                    <input type="text" id="editBatchNo" required>
+                </div>
+                <div class="form-group">
+                    <label for="editMfgDate">Mfg Date:</label>
+                    <input type="date" id="editMfgDate">
+                </div>
+                <div class="form-group">
+                    <label for="editExpDate">Exp Date:</label>
+                    <input type="date" id="editExpDate">
+                </div>
+                <div class="form-group">
+                    <label for="editBatchMRP">MRP:</label>
+                    <input type="number" step="0.01" id="editBatchMRP">
+                </div>
+                <div class="form-group">
+                    <label for="editBatchQty">Quantity:</label>
+                    <input type="number" id="editBatchQty">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editBatchModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Update Batch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="addPackConfigModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>Add New Pack Config</h3><span class="close-btn" onclick="closeModal('addPackConfigModal')">&times;</span></div>
-            <p>Form for adding new pack config goes here...</p>
-            <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('addPackConfigModal')">Cancel</button><button type="submit" class="btn btn-success">Save Config</button></div>
+            <form id="packConfigForm">
+                <div class="form-group">
+                    <label for="packProductId">Product ID:</label>
+                    <input type="number" id="packProductId" required>
+                </div>
+                <div class="form-group">
+                    <label for="packType">Pack Type:</label>
+                    <input type="text" id="packType" required>
+                </div>
+                <div class="form-group">
+                    <label for="unitsPerPack">Units per Pack:</label>
+                    <input type="text" id="unitsPerPack">
+                </div>
+                <div class="form-group">
+                    <label for="packDimensions">Dimensions:</label>
+                    <input type="text" id="packDimensions">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addPackConfigModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Config</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editPackConfigModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Edit Pack Config</h3><span class="close-btn" onclick="closeModal('editPackConfigModal')">&times;</span></div>
+            <form id="editPackConfigForm">
+                <input type="hidden" id="editPackConfigId">
+                <div class="form-group">
+                    <label for="editPackProductId">Product ID:</label>
+                    <input type="number" id="editPackProductId" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPackType">Pack Type:</label>
+                    <input type="text" id="editPackType" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUnitsPerPack">Units per Pack:</label>
+                    <input type="text" id="editUnitsPerPack">
+                </div>
+                <div class="form-group">
+                    <label for="editPackDimensions">Dimensions:</label>
+                    <input type="text" id="editPackDimensions">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editPackConfigModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Update Config</button>
+                </div>
+            </form>
         </div>
     </div>
     <div id="addPriceModal" class="modal">
@@ -1546,16 +1661,28 @@
 
         });
 
-        function openModal(modalId, editId = null) {
-            console.log(`Opening modal: ${modalId}` + (editId ? ` for ID: ${editId}` : ''));
+        function openModal(modalId, data = null) {
             const modal = document.getElementById(modalId);
             modal.style.display = 'block';
 
-            // If it's an edit modal, populate relevant fields
-            if (modalId === 'editProductModal' && editId) {
-                document.getElementById('editProductId').value = editId;
-                // In a real app, you'd fetch product data for `editId`
-                // and populate other fields like editProductName, editProductHSN etc.
+            if (modalId === 'editBatchModal' && data) {
+                document.getElementById('editBatchId').value = data.id;
+                document.getElementById('editBatchProductId').value = data.product_id;
+                document.getElementById('editBatchNo').value = data.batch_no;
+                document.getElementById('editMfgDate').value = data.mfg_date || '';
+                document.getElementById('editExpDate').value = data.exp_date || '';
+                document.getElementById('editBatchMRP').value = data.mrp || '';
+                document.getElementById('editBatchQty').value = data.quantity || '';
+            } else if (modalId === 'editPackConfigModal' && data) {
+                document.getElementById('editPackConfigId').value = data.id;
+                document.getElementById('editPackProductId').value = data.product_id;
+                document.getElementById('editPackType').value = data.pack_type;
+                document.getElementById('editUnitsPerPack').value = data.units_per_pack || '';
+                document.getElementById('editPackDimensions').value = data.dimensions || '';
+            } else if (modalId === 'editProductModal' && data) {
+                document.getElementById('editProductId').value = data.id;
+                document.getElementById('editProductName').value = data.name;
+                document.getElementById('editProductHSN').value = data.hsn;
             }
         }
 
@@ -1637,6 +1764,137 @@
             }
         });
 
+        document.getElementById('batchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                product_id: document.getElementById('batchProductId').value,
+                batch_no: document.getElementById('batchNo').value,
+                mfg_date: document.getElementById('mfgDate').value,
+                exp_date: document.getElementById('expDate').value,
+                mrp: document.getElementById('batchMRP').value,
+                quantity: document.getElementById('batchQty').value
+            };
+            const resp = await fetch('/api/manufacturer/batches', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                closeModal('addBatchModal');
+                await loadBatches();
+            }
+        });
+
+        document.getElementById('editBatchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editBatchId').value;
+            const payload = {
+                product_id: document.getElementById('editBatchProductId').value,
+                batch_no: document.getElementById('editBatchNo').value,
+                mfg_date: document.getElementById('editMfgDate').value,
+                exp_date: document.getElementById('editExpDate').value,
+                mrp: document.getElementById('editBatchMRP').value,
+                quantity: document.getElementById('editBatchQty').value
+            };
+            const resp = await fetch(`/api/manufacturer/batches/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                closeModal('editBatchModal');
+                await loadBatches();
+            }
+        });
+
+        document.getElementById('packConfigForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                product_id: document.getElementById('packProductId').value,
+                pack_type: document.getElementById('packType').value,
+                units_per_pack: document.getElementById('unitsPerPack').value,
+                dimensions: document.getElementById('packDimensions').value
+            };
+            const resp = await fetch('/api/manufacturer/pack-configs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                closeModal('addPackConfigModal');
+                await loadPackConfigs();
+            }
+        });
+
+        document.getElementById('editPackConfigForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editPackConfigId').value;
+            const payload = {
+                product_id: document.getElementById('editPackProductId').value,
+                pack_type: document.getElementById('editPackType').value,
+                units_per_pack: document.getElementById('editUnitsPerPack').value,
+                dimensions: document.getElementById('editPackDimensions').value
+            };
+            const resp = await fetch(`/api/manufacturer/pack-configs/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                closeModal('editPackConfigModal');
+                await loadPackConfigs();
+            }
+        });
+
+        async function loadBatches() {
+            const resp = await fetch('/api/manufacturer/batches', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await resp.json();
+            const body = document.getElementById('batchTableBody');
+            body.innerHTML = '';
+            data.forEach(b => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${b.batch_no}</td>
+                    <td>${b.product_id}</td>
+                    <td>${b.mfg_date || ''}</td>
+                    <td>${b.exp_date || ''}</td>
+                    <td>${b.mrp || ''}</td>
+                    <td>${b.quantity || ''}</td>
+                    <td class="action-buttons"></td>`;
+                const actionTd = row.querySelector('.action-buttons');
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-secondary btn-sm';
+                btn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                btn.addEventListener('click', () => openModal('editBatchModal', b));
+                actionTd.appendChild(btn);
+                body.appendChild(row);
+            });
+        }
+
+        async function loadPackConfigs() {
+            const resp = await fetch('/api/manufacturer/pack-configs', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await resp.json();
+            const body = document.getElementById('packConfigTableBody');
+            body.innerHTML = '';
+            data.forEach(c => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${c.id}</td>
+                    <td>${c.product_id}</td>
+                    <td>${c.pack_type}</td>
+                    <td>${c.units_per_pack || ''}</td>
+                    <td>${c.dimensions || ''}</td>
+                    <td class="action-buttons"></td>`;
+                const actionTd = row.querySelector('.action-buttons');
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-secondary btn-sm';
+                btn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                btn.addEventListener('click', () => openModal('editPackConfigModal', c));
+                actionTd.appendChild(btn);
+                body.appendChild(row);
+            });
+        }
+
         async function loadOrders() {
             const resp = await fetch('/api/orders?status=requested', { headers: { 'Authorization': `Bearer ${token}` } });
             const data = await resp.json();
@@ -1658,6 +1916,8 @@
         }
 
         loadProducts();
+        loadBatches();
+        loadPackConfigs();
         loadOrders();
 
     </script>
