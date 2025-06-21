@@ -123,10 +123,10 @@ Full list in [`product name.txt`](./product%20name.txt)
 
 ```bash
 # Sample CURL to authenticate
-curl -X POST http://localhost:8000/api/auth/login -d 'username=admin&password=admin'
+curl -X POST http://localhost:any/api/auth/login -d 'username=admin&password=admin'
 
 # Get stockist orders
-curl -H "Authorization: Bearer <JWT>" http://localhost:8000/api/orders/stockist
+curl -H "Authorization: Bearer <JWT>" http://localhost:any/api/orders/stockist
 ```
 
 ---
