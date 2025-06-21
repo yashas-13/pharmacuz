@@ -852,6 +852,7 @@
                                 <tr>
                                     <th>Product ID</th>
                                     <th>Name</th>
+                                    <th>Description</th>
                                     <th>HSN</th>
                                     <th>GST%</th>
                                     <th>Composition</th>
@@ -1308,6 +1309,10 @@
                     <input type="text" id="productName" name="productName" required>
                 </div>
                 <div class="form-group">
+                    <label for="productDescription">Description:</label>
+                    <textarea id="productDescription" name="productDescription" rows="2"></textarea>
+                </div>
+                <div class="form-group">
                     <label for="productHSN">HSN Code:</label>
                     <input type="text" id="productHSN" name="productHSN" required>
                 </div>
@@ -1350,7 +1355,11 @@
                     <label for="editProductName">Product Name:</label>
                     <input type="text" id="editProductName" name="editProductName" value="Paracetamol 500mg" required>
                 </div>
-                 <div class="form-group">
+                <div class="form-group">
+                    <label for="editProductDescription">Description:</label>
+                    <textarea id="editProductDescription" name="editProductDescription" rows="2"></textarea>
+                </div>
+                <div class="form-group">
                     <label for="editProductHSN">HSN Code:</label>
                     <input type="text" id="editProductHSN" name="editProductHSN" value="30049099" required>
                 </div>
@@ -1684,6 +1693,7 @@
             } else if (modalId === 'editProductModal' && data) {
                 document.getElementById('editProductId').value = data.id;
                 document.getElementById('editProductName').value = data.name;
+                document.getElementById('editProductDescription').value = data.description || '';
                 document.getElementById('editProductHSN').value = data.hsn;
             }
         }
@@ -1737,6 +1747,7 @@
                 row.innerHTML = `
                     <td>${p.id}</td>
                     <td>${p.name}</td>
+                    <td>${p.description || ''}</td>
                     <td>${p.hsn || ''}</td>
                     <td>${p.gst || ''}</td>
                     <td>${p.composition || ''}</td>
@@ -1750,6 +1761,7 @@
             e.preventDefault();
             const payload = {
                 name: document.getElementById('productName').value,
+                description: document.getElementById('productDescription').value,
                 hsn: document.getElementById('productHSN').value,
                 gst: document.getElementById('productGST').value,
                 composition: document.getElementById('productComposition').value,
