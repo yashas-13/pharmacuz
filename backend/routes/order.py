@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import Session
+from datetime import date
 from backend.auth import role_required, roles_required
 from backend.database import SessionLocal
 from backend.models.order import Order
@@ -11,7 +12,8 @@ order_bp = Blueprint('order', __name__)
 def orders():
     session: Session = SessionLocal()
     if request.method == 'POST':
-        if request.user['role'] != 'super_stockist':
+        user_role = request.user['role']
+        if user_role not in ('super_stockist', 'cfa'):
             session.close()
             return jsonify({'error': 'Forbidden'}), 403
         data = request.json or {}
@@ -20,18 +22,49 @@ def orders():
         if not product or quantity is None:
             session.close()
             return jsonify({'error': 'Invalid order data'}), 400
-        order = Order(product=product, quantity=quantity, status='requested')
+        target = 'cfa' if user_role == 'super_stockist' else 'manufacturer'
+        order = Order(
+            product=product,
+            quantity=quantity,
+            status='requested',
+            placed_by=request.user['username'],
+            target=target,
+            order_date=date.today()
+        )
         session.add(order)
         session.commit()
-        result = {'id': order.id, 'product': order.product, 'quantity': order.quantity, 'status': order.status}
+        result = {
+            'id': order.id,
+            'product': order.product,
+            'quantity': order.quantity,
+            'status': order.status,
+            'placed_by': order.placed_by,
+            'target': order.target,
+            'order_date': str(order.order_date)
+        }
         session.close()
         return jsonify(result), 201
+
     status = request.args.get('status')
+    target_filter = request.args.get('target')
     query = session.query(Order)
     if status:
         query = query.filter(Order.status == status)
+    if target_filter:
+        query = query.filter(Order.target == target_filter)
     orders = query.all()
-    result = [{'id': o.id, 'product': o.product, 'quantity': o.quantity, 'status': o.status} for o in orders]
+    result = [
+        {
+            'id': o.id,
+            'product': o.product,
+            'quantity': o.quantity,
+            'status': o.status,
+            'placed_by': o.placed_by,
+            'target': o.target,
+            'order_date': str(o.order_date)
+        }
+        for o in orders
+    ]
     session.close()
     return jsonify(result)
 
@@ -78,7 +111,10 @@ def dispatch_order(order_id):
         'id': order.id,
         'product': order.product,
         'quantity': order.quantity,
-        'status': order.status
+        'status': order.status,
+        'placed_by': order.placed_by,
+        'target': order.target,
+        'order_date': str(order.order_date)
     }
     session.close()
     return jsonify(result)
@@ -102,7 +138,10 @@ def deliver_order(order_id):
         'id': order.id,
         'product': order.product,
         'quantity': order.quantity,
-        'status': order.status
+        'status': order.status,
+        'placed_by': order.placed_by,
+        'target': order.target,
+        'order_date': str(order.order_date)
     }
     session.close()
     return jsonify(result)

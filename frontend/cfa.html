@@ -1288,10 +1288,14 @@
         // Basic JS for sidebar navigation and modal placeholders
         document.addEventListener('DOMContentLoaded', function () {
             const token = localStorage.getItem('token');
-            const role = localStorage.getItem('role');
-            // Simulate CFA role for this page
-            localStorage.setItem('role', 'cfa'); 
             const userRole = localStorage.getItem('role');
+            const username = localStorage.getItem('username');
+            window.token = token;
+            window.username = username;
+            if (!token || userRole !== 'cfa') {
+                window.location.href = 'index.html';
+                return;
+            }
 
             const navLinks = document.querySelectorAll('.sidebar .nav-link');
             const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
@@ -1392,6 +1396,18 @@
                 localStorage.removeItem('cfaLastActiveSection'); // Clear CFA specific state
                 window.location.href = 'index.html'; // Redirect to login/home page
             });
+
+            // Initial data load
+            loadCFAProducts();
+            loadCFABatches();
+            loadCFAPackConfigs();
+            loadCFAPricing();
+            loadIncomingOrders();
+            loadOutgoingOrders();
+            loadCFAMyStock();
+            loadDownstreamStockVisibility();
+            loadCFAAuditLogs();
+            populateProductDropdownsCFA();
         });
 
         function openModal(modalId) {
@@ -1456,16 +1472,18 @@
         };
 
         // Populate dropdowns with products
-        function populateProductDropdownsCFA() {
+        async function populateProductDropdownsCFA() {
             const productSelects = ['mfrOrderProductId', 'receiveProductId', 'dispatchProductId'];
+            const resp = await fetch('/api/products', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
             productSelects.forEach(selectId => {
                 const selectElement = document.getElementById(selectId);
                 if (selectElement) {
                     selectElement.innerHTML = '';
-                    dummyCFAData.products.forEach(p => {
+                    data.forEach(p => {
                         const option = document.createElement('option');
                         option.value = p.id;
-                        option.textContent = p.name;
+                        option.textContent = `${p.id} - ${p.name}`;
                         selectElement.appendChild(option);
                     });
                 }
@@ -1473,11 +1491,13 @@
         }
 
         // Load Products (View Only for CFA)
-        function loadCFAProducts() {
+        async function loadCFAProducts() {
             const body = document.getElementById('cfaProductTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyCFAData.products.forEach(p => {
+            const resp = await fetch('/api/products', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(p => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${p.id}</td>
@@ -1493,18 +1513,20 @@
         }
 
         // Load Batches (View Only for CFA)
-        function loadCFABatches() {
+        async function loadCFABatches() {
             const body = document.getElementById('cfaBatchTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyCFAData.batches.forEach(b => {
+            const resp = await fetch('/api/batches', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(b => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${b.id}</td>
                     <td>${b.product_id}</td>
                     <td>${b.mfg_date || ''}</td>
                     <td>${b.exp_date || ''}</td>
-                    <td>${b.mrp.toFixed(2) || ''}</td>
+                    <td>${b.mrp || ''}</td>
                     <td>${b.quantity || ''}</td>
                 `;
                 body.appendChild(row);
@@ -1549,16 +1571,18 @@
         }
 
         // Load Incoming Orders (SS to CFA)
-        function loadIncomingOrders() {
+        async function loadIncomingOrders() {
             const body = document.getElementById('incomingOrdersTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyCFAData.incomingOrders.forEach(o => {
+            const resp = await fetch('/api/orders?target=cfa', { headers: { 'Authorization': `Bearer ${token}` } });
+            const orders = resp.ok ? await resp.json() : [];
+            orders.forEach(o => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${o.id}</td>
-                    <td>${o.from_stockist}</td>
-                    <td>${o.product_name}</td>
+                    <td>${o.placed_by}</td>
+                    <td>${o.product}</td>
                     <td>${o.quantity}</td>
                     <td>${o.order_date}</td>
                     <td>${o.status}</td>
@@ -1588,16 +1612,18 @@
         }
 
         // Load Outgoing Orders (CFA to Mfr)
-        function loadOutgoingOrders() {
+        async function loadOutgoingOrders() {
             const body = document.getElementById('outgoingOrdersTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyCFAData.outgoingOrders.forEach(o => {
+            const resp = await fetch('/api/orders?target=manufacturer', { headers: { 'Authorization': `Bearer ${token}` } });
+            const orders = resp.ok ? await resp.json() : [];
+            orders.filter(o => o.placed_by === username).forEach(o => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${o.id}</td>
-                    <td>${o.to_manufacturer}</td>
-                    <td>${o.product_name}</td>
+                    <td>${o.target}</td>
+                    <td>${o.product}</td>
                     <td>${o.quantity}</td>
                     <td>${o.order_date}</td>
                     <td>${o.status}</td>
@@ -1676,13 +1702,26 @@
         }
 
         // Form submissions (simulated)
-        document.getElementById('mfrOrderForm').addEventListener('submit', function(e) {
+        document.getElementById('mfrOrderForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const productId = document.getElementById('mfrOrderProductId').value;
             const quantity = document.getElementById('mfrOrderQuantity').value;
-            alert(`Order placed to Manufacturer: Product ${productId}, Quantity ${quantity} (Simulated)`);
+            const resp = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ product: productId, quantity: parseInt(quantity) })
+            });
+            if (resp.ok) {
+                await loadOutgoingOrders();
+                alert('Order placed successfully');
+            } else {
+                const data = await resp.json();
+                alert(data.error || 'Failed to place order');
+            }
             closeModal('placeMfrOrderModal');
-            // In real app: add this to outgoingOrders and refresh
         });
 
         document.getElementById('receiveStockForm').addEventListener('submit', function(e) {
@@ -1706,17 +1745,7 @@
             // In real app: update cfaMyStock and SS stock, refresh
         });
 
-        // Initialize data loads on page load
-        loadCFAProducts();
-        loadCFABatches();
-        loadCFAPackConfigs();
-        loadCFAPricing();
-        loadIncomingOrders();
-        loadOutgoingOrders();
-        loadCFAMyStock();
-        loadDownstreamStockVisibility();
-        loadCFAAuditLogs();
-        populateProductDropdownsCFA(); // For modals
+
 
         // Placeholder for chart rendering on CFA dashboard
         function renderCFACharts() {

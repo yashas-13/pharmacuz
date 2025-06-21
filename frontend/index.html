@@ -37,6 +37,7 @@
         if (resp.ok) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.role);
+            localStorage.setItem('username', username);
             if (data.role === 'manufacturer') {
                 window.location.href = 'manufacterer.html';
             } else if (data.role === 'cfa') {
