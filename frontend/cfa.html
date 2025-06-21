@@ -810,7 +810,7 @@
                         </div>
                         <div class="dashboard-card alert-card warning">
                             <span class="alert-icon"><i class="fas fa-exclamation-triangle"></i></span>
-                            <p><strong>Alert:</strong> Low stock for **Product Y** (Batch B123) - only 50 units left. Consider ordering from Manufacturer.</p>
+                            <p id="refillAlert"><strong>Alert:</strong> Low stock for **Product Y** (Batch B123) - only 50 units left. Consider ordering from Manufacturer.</p>
                         </div>
                         <div class="dashboard-card chart-card">
                             <div class="card-header">
@@ -1114,6 +1114,16 @@
                 </div>
             </section>
 
+            <section id="qr-scanner-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>QR Code Scanner</h3>
+                    </div>
+                    <button class="btn btn-primary" id="startScanBtn"><i class="fas fa-qrcode"></i> Scan</button>
+                    <div id="qrReader" style="width:300px; display:none;"></div>
+                </div>
+            </section>
+
             <section id="audit-trail-section" class="content-section">
                 <div class="card">
                     <div class="card-header">
@@ -1282,8 +1292,7 @@
             <span>Audit</span>
         </a>
     </nav>
-
-
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
         // Basic JS for sidebar navigation and modal placeholders
         document.addEventListener('DOMContentLoaded', function () {
@@ -1405,8 +1414,10 @@
             loadIncomingOrders();
             loadOutgoingOrders();
             loadCFAMyStock();
+            loadRefillSuggestions();
             loadDownstreamStockVisibility();
             loadCFAAuditLogs();
+            renderCFACharts();
             populateProductDropdownsCFA();
             document.getElementById('pricingStateRegionCFA').addEventListener('change', loadCFAPricing);
         });
@@ -1778,27 +1789,45 @@
             closeModal('cfaDispatchStockModal');
         });
 
+        async function loadRefillSuggestions() {
+            const resp = await fetch('/api/analytics/refill-suggestions', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            const alertP = document.getElementById('refillAlert');
+            if (alertP) {
+                if (data.length > 0) {
+                    const s = data[0];
+                    alertP.innerHTML = `<strong>Alert:</strong> Low stock for <b>${s.product_name}</b> - order ${s.suggested_qty} units.`;
+                } else {
+                    alertP.textContent = 'Stock levels are healthy.';
+                }
+            }
+        }
+
+        document.getElementById('startScanBtn').addEventListener('click', function() {
+            const qrDiv = document.getElementById('qrReader');
+            qrDiv.style.display = 'block';
+            const scanner = new Html5Qrcode('qrReader');
+            scanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: 250 }, (decodedText) => {
+                alert('QR: ' + decodedText);
+                scanner.stop();
+                qrDiv.style.display = 'none';
+            });
+        });
+
 
 
         // Placeholder for chart rendering on CFA dashboard
-        function renderCFACharts() {
-            // Simulate data for dashboard charts
+        async function renderCFACharts() {
             const incomingOrdersCtx = document.getElementById('incomingOrdersChart');
             if (incomingOrdersCtx) {
-                const incomingOrdersData = {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    datasets: [{
-                        label: 'Incoming Orders Volume',
-                        data: [15, 20, 10, 25],
-                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
-                        borderColor: 'rgba(52, 152, 219, 1)',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                };
+                const resp = await fetch('/api/analytics/order-stats', { headers: { 'Authorization': `Bearer ${token}` } });
+                const stats = resp.ok ? await resp.json() : {};
                 new Chart(incomingOrdersCtx, {
                     type: 'bar',
-                    data: incomingOrdersData,
+                    data: {
+                        labels: Object.keys(stats),
+                        datasets: [{ label: 'Orders', data: Object.values(stats), backgroundColor: 'rgba(52,152,219,0.7)' }]
+                    },
                     options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
                 });
             }
@@ -1812,7 +1841,6 @@
             document.getElementById('cfa-stock-value').textContent = `$${totalStockValue.toFixed(2)}`;
         }
 
-        document.addEventListener('DOMContentLoaded', renderCFACharts); // Render charts after all content is loaded
     </script>
 </body>
 </html>

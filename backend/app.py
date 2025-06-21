@@ -14,6 +14,7 @@ from backend.routes.pricing import pricing_bp
 from backend.routes.recall import recall_bp
 from backend.routes.pack_config import pack_config_bp
 from backend.routes.cfa_stock import cfa_stock_bp
+from backend.routes.analytics import analytics_bp
 from backend.database import engine, SessionLocal
 from backend.models import Base
 from backend.models.order import Order  # ensure table registration
@@ -90,6 +91,7 @@ app.register_blueprint(pricing_bp, url_prefix="/api")
 app.register_blueprint(recall_bp, url_prefix="/api")
 app.register_blueprint(pack_config_bp, url_prefix="/api")
 app.register_blueprint(cfa_stock_bp, url_prefix="/api")
+app.register_blueprint(analytics_bp, url_prefix="/api")
 
 
 @app.route("/")
