@@ -7,6 +7,7 @@ from backend.routes.cfa import cfa_bp
 from backend.routes.super_stockist import super_stockist_bp
 from backend.routes.order import order_bp
 from backend.routes.product import product_bp
+from backend.routes.inventory import inventory_bp
 from backend.database import engine, SessionLocal
 from backend.models import Base
 from backend.models.order import Order  # ensure table registration
@@ -14,6 +15,7 @@ from backend.models.batch import Batch
 from backend.models.pack_config import PackConfig
 from backend.models.product import Product
 from backend.models.user import User
+from backend.models.inventory import Inventory
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="")
 
@@ -71,6 +73,7 @@ app.register_blueprint(cfa_bp, url_prefix="/api/cfa")
 app.register_blueprint(super_stockist_bp, url_prefix="/api/super_stockist")
 app.register_blueprint(order_bp, url_prefix="/api")
 app.register_blueprint(product_bp, url_prefix="/api")
+app.register_blueprint(inventory_bp, url_prefix="/api")
 
 
 @app.route("/")
