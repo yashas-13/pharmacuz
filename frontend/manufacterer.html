@@ -859,30 +859,7 @@
                                 </tr>
                             </thead>
                             <tbody id="productTableBody">
-                                <tr>
-                                    <td>PROD001</td>
-                                    <td>Paracetamol 500mg</td>
-                                    <td>30049099</td>
-                                    <td>12%</td>
-                                    <td>Paracetamol</td>
-                                    <td>Analgesic</td>
-                                    <td class="action-buttons">
-                                        <button class="btn btn-secondary btn-sm" onclick="openModal('editProductModal', 'PROD001')"><i class="fas fa-edit"></i> Edit</button>
-                                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Delete</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>PROD002</td>
-                                    <td>Amoxicillin 250mg</td>
-                                    <td>30041010</td>
-                                    <td>12%</td>
-                                    <td>Amoxicillin</td>
-                                    <td>Antibiotic</td>
-                                    <td class="action-buttons">
-                                        <button class="btn btn-secondary btn-sm" onclick="openModal('editProductModal', 'PROD002')"><i class="fas fa-edit"></i> Edit</button>
-                                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Delete</button>
-                                    </td>
-                                </tr>
+                                <!-- Dynamic rows inserted via JS -->
                             </tbody>
                         </table>
                     </div>
@@ -1603,20 +1580,50 @@
         }
         renderCharts();
 
-        // Placeholder for form submissions - to be replaced with actual API calls
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                console.log(`Form ${this.id} submitted. Data would be sent to backend.`);
-                alert('Form submitted (dev placeholder). Check console.');
-                // Example: const formData = new FormData(this); apiService.submit(this.id, formData);
-                const parentModal = this.closest('.modal');
-                if (parentModal) {
-                    closeModal(parentModal.id);
-                }
+        const token = localStorage.getItem('token');
+
+        async function loadProducts() {
+            const resp = await fetch('/api/manufacturer/products', {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
+            const data = await resp.json();
+            const body = document.getElementById('productTableBody');
+            body.innerHTML = '';
+            data.forEach(p => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>${p.hsn || ''}</td>
+                    <td>${p.gst || ''}</td>
+                    <td>${p.composition || ''}</td>
+                    <td>${p.category || ''}</td>
+                    <td class="action-buttons"></td>`;
+                body.appendChild(row);
+            });
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('productName').value,
+                hsn: document.getElementById('productHSN').value,
+                gst: document.getElementById('productGST').value,
+                composition: document.getElementById('productComposition').value,
+                category: document.getElementById('productCategory').value
+            };
+            const resp = await fetch('/api/manufacturer/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                closeModal('addProductModal');
+                await loadProducts();
+            }
         });
+
+        loadProducts();
 
     </script>
 </body>
