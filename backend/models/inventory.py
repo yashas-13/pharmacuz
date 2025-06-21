@@ -7,5 +7,6 @@ class Inventory(Base):
     location = Column(String, nullable=False)
     product_id = Column(Integer, ForeignKey('products.id'), nullable=False)
     batch_no = Column(String, nullable=False)
+    mfg_date = Column(Date, nullable=True)
     exp_date = Column(Date, nullable=True)
     quantity = Column(Integer, nullable=False)

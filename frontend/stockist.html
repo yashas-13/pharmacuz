@@ -1370,7 +1370,7 @@
             body.innerHTML = '';
             data.forEach(o => {
                 const row = document.createElement('tr');
-                const action = o.status === 'in_transit' ? `<button class="btn btn-success btn-sm accept-order-btn" data-order-id="${o.id}">Accept</button>` : '';
+                const action = o.status === 'dispatched' ? `<button class="btn btn-success btn-sm accept-order-btn" data-order-id="${o.id}">Accept</button>` : '';
                 row.innerHTML = `
                     <td>${o.id}</td>
                     <td>${o.target}</td>
@@ -1384,7 +1384,8 @@
             document.querySelectorAll('.accept-order-btn').forEach(btn => {
                 btn.addEventListener('click', async function() {
                     const orderId = this.dataset.orderId;
-                    await fetch(`/api/orders/${orderId}/deliver`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                    await fetch(`/api/orders/${orderId}/receive`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                    await fetch(`/api/orders/${orderId}/acknowledge`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
                     await fetchMyStock();
                     await loadMyOrders();
                 });

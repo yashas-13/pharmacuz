@@ -7,6 +7,15 @@ from backend.models.order import Order
 from backend.models.product import Product
 from backend.models.inventory import Inventory
 
+
+def _parse_iso_date(value):
+    if isinstance(value, str) and value:
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            return None
+    return value
+
 order_bp = Blueprint('order', __name__)
 
 @order_bp.route('/orders', methods=['GET', 'POST'])
@@ -28,7 +37,7 @@ def orders():
         order = Order(
             product=product,
             quantity=quantity,
-            status='requested',
+            status='created',
             placed_by=request.user['username'],
             target=target,
             order_date=date.today()
@@ -42,6 +51,9 @@ def orders():
             'status': order.status,
             'placed_by': order.placed_by,
             'target': order.target,
+            'batch_no': order.batch_no,
+            'mfg_date': str(order.mfg_date) if order.mfg_date else None,
+            'exp_date': str(order.exp_date) if order.exp_date else None,
             'order_date': str(order.order_date)
         }
         session.close()
@@ -63,6 +75,9 @@ def orders():
             'status': o.status,
             'placed_by': o.placed_by,
             'target': o.target,
+            'batch_no': o.batch_no,
+            'mfg_date': str(o.mfg_date) if o.mfg_date else None,
+            'exp_date': str(o.exp_date) if o.exp_date else None,
             'order_date': str(o.order_date)
         }
         for o in orders
@@ -80,7 +95,7 @@ def request_approval(order_id):
     if not order:
         session.close()
         return jsonify({'error': 'Order not found'}), 404
-    if order.status != 'requested':
+    if order.status != 'created':
         session.close()
         return jsonify({'error': 'Order cannot be forwarded'}), 400
     order.status = 'approval_requested'
@@ -108,7 +123,7 @@ def approve_order(order_id):
     if not order:
         session.close()
         return jsonify({'error': 'Order not found'}), 404
-    if order.status != 'approval_requested':
+    if order.status not in ('created', 'approval_requested'):
         session.close()
         return jsonify({'error': 'Order cannot be approved'}), 400
     order.status = 'approved'
@@ -117,31 +132,10 @@ def approve_order(order_id):
         'id': order.id,
         'product': order.product,
         'quantity': order.quantity,
-        'status': order.status
-    }
-    session.close()
-    return jsonify(result)
-
-
-@order_bp.route('/orders/<int:order_id>/dispatch', methods=['POST'])
-@roles_required('cfa', 'manufacturer')
-def dispatch_order(order_id):
-    """Dispatch an approved order."""
-    session: Session = SessionLocal()
-    order = session.query(Order).get(order_id)
-    if not order:
-        session.close()
-        return jsonify({'error': 'Order not found'}), 404
-    if order.status != 'approved':
-        session.close()
-        return jsonify({'error': 'Order cannot be dispatched'}), 400
-    order.status = 'in_transit'
-    session.commit()
-    result = {
-        'id': order.id,
-        'product': order.product,
-        'quantity': order.quantity,
         'status': order.status,
+        'batch_no': order.batch_no,
+        'mfg_date': str(order.mfg_date) if order.mfg_date else None,
+        'exp_date': str(order.exp_date) if order.exp_date else None,
         'placed_by': order.placed_by,
         'target': order.target,
         'order_date': str(order.order_date)
@@ -150,36 +144,131 @@ def dispatch_order(order_id):
     return jsonify(result)
 
 
-@order_bp.route('/orders/<int:order_id>/deliver', methods=['POST'])
-@role_required('super_stockist')
-def deliver_order(order_id):
-    """Stockist confirms delivery of an order."""
+@order_bp.route('/orders/<int:order_id>/dispatch', methods=['POST'])
+@roles_required('cfa', 'manufacturer')
+def dispatch_order(order_id):
+    """Dispatch an approved order with batch details."""
     session: Session = SessionLocal()
     order = session.query(Order).get(order_id)
     if not order:
         session.close()
         return jsonify({'error': 'Order not found'}), 404
-    if order.status != 'in_transit':
+    if order.status != 'approved':
         session.close()
-        return jsonify({'error': 'Order cannot be marked delivered'}), 400
-    order.status = 'delivered'
-    # Add delivered quantity to stockist inventory
+        return jsonify({'error': 'Order cannot be dispatched'}), 400
+
+    data = request.json or {}
+    batch_no = data.get('batch_no')
+    mfg_date = _parse_iso_date(data.get('mfg_date'))
+    exp_date = _parse_iso_date(data.get('exp_date'))
+    if not batch_no:
+        session.close()
+        return jsonify({'error': 'batch_no required'}), 400
+
     product = session.query(Product).filter_by(name=order.product).first()
-    if product:
-        inventory = Inventory(
-            location=request.user['username'],
-            product_id=product.id,
-            batch_no='N/A',
-            exp_date=None,
-            quantity=order.quantity
-        )
-        session.add(inventory)
+    if not product:
+        session.close()
+        return jsonify({'error': 'Product not found'}), 400
+
+    inventory = session.query(Inventory).filter_by(
+        location=request.user['username'],
+        product_id=product.id,
+        batch_no=batch_no
+    ).first()
+    if not inventory or inventory.quantity < order.quantity:
+        session.close()
+        return jsonify({'error': 'Insufficient stock'}), 400
+
+    inventory.quantity -= order.quantity
+
+    order.status = 'dispatched'
+    order.batch_no = batch_no
+    order.mfg_date = mfg_date
+    order.exp_date = exp_date
     session.commit()
     result = {
         'id': order.id,
         'product': order.product,
         'quantity': order.quantity,
         'status': order.status,
+        'batch_no': order.batch_no,
+        'mfg_date': str(order.mfg_date) if order.mfg_date else None,
+        'exp_date': str(order.exp_date) if order.exp_date else None,
+        'placed_by': order.placed_by,
+        'target': order.target,
+        'order_date': str(order.order_date)
+    }
+    session.close()
+    return jsonify(result)
+
+
+@order_bp.route('/orders/<int:order_id>/receive', methods=['POST'])
+@roles_required('cfa', 'super_stockist')
+def receive_order(order_id):
+    """Receiver confirms delivery of an order."""
+    session: Session = SessionLocal()
+    order = session.query(Order).get(order_id)
+    if not order:
+        session.close()
+        return jsonify({'error': 'Order not found'}), 404
+    if order.status != 'dispatched':
+        session.close()
+        return jsonify({'error': 'Order cannot be received'}), 400
+    product = session.query(Product).filter_by(name=order.product).first()
+    if product:
+        inventory = session.query(Inventory).filter_by(
+            location=request.user['username'],
+            product_id=product.id,
+            batch_no=order.batch_no
+        ).first()
+        if inventory:
+            inventory.quantity += order.quantity
+        else:
+            inventory = Inventory(
+                location=request.user['username'],
+                product_id=product.id,
+                batch_no=order.batch_no,
+                mfg_date=order.mfg_date,
+                exp_date=order.exp_date,
+                quantity=order.quantity
+            )
+            session.add(inventory)
+    order.status = 'received'
+    session.commit()
+    result = {
+        'id': order.id,
+        'product': order.product,
+        'quantity': order.quantity,
+        'status': order.status,
+        'batch_no': order.batch_no,
+        'placed_by': order.placed_by,
+        'target': order.target,
+        'order_date': str(order.order_date)
+    }
+    session.close()
+    return jsonify(result)
+
+
+@order_bp.route('/orders/<int:order_id>/acknowledge', methods=['POST'])
+@roles_required('cfa', 'super_stockist')
+def acknowledge_order(order_id):
+    """Finalize order after verifying receipt."""
+    session: Session = SessionLocal()
+    order = session.query(Order).get(order_id)
+    if not order:
+        session.close()
+        return jsonify({'error': 'Order not found'}), 404
+    if order.status != 'received':
+        session.close()
+        return jsonify({'error': 'Order cannot be acknowledged'}), 400
+    order.status = 'acknowledged'
+    session.commit()
+    result = {
+        'id': order.id,
+        'product': order.product,
+        'quantity': order.quantity,
+        'status': order.status,
+        'batch_no': order.batch_no,
         'placed_by': order.placed_by,
         'target': order.target,
         'order_date': str(order.order_date)
