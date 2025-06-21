@@ -1,5 +1,8 @@
 from flask import Blueprint, request, jsonify
 import uuid
+from sqlalchemy.orm import Session
+from backend.database import SessionLocal
+from backend.models.user import User
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -18,12 +21,23 @@ def login():
     data = request.json or {}
     username = data.get('username')
     password = data.get('password')
-    user = USERS.get(username)
-    if not user or user['password'] != password:
-        return jsonify({'error': 'Invalid credentials'}), 401
+    session: Session = SessionLocal()
+    user_record = session.query(User).filter_by(username=username).first()
+    if user_record:
+        if user_record.password != password:
+            session.close()
+            return jsonify({'error': 'Invalid credentials'}), 401
+        role = user_record.role
+    else:
+        user = USERS.get(username)
+        if not user or user['password'] != password:
+            session.close()
+            return jsonify({'error': 'Invalid credentials'}), 401
+        role = user['role']
     token = str(uuid.uuid4())
     TOKENS[token] = username
-    return jsonify({'token': token, 'role': user['role']})
+    session.close()
+    return jsonify({'token': token, 'role': role})
 
 
 def get_user_from_token(token):
@@ -35,12 +49,20 @@ def get_user_from_token(token):
     username = TOKENS.get(token)
     if not username:
         return None
-    user = USERS.get(username)
-    if not user:
-        return None
+    session: Session = SessionLocal()
+    user_record = session.query(User).filter_by(username=username).first()
+    if user_record:
+        role = user_record.role
+    else:
+        user = USERS.get(username)
+        if not user:
+            session.close()
+            return None
+        role = user['role']
+    session.close()
     return {
         'username': username,
-        'role': user['role']
+        'role': role
     }
 
 

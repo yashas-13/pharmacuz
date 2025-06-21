@@ -1287,30 +1287,6 @@
                                 </tr>
                             </thead>
                             <tbody id="userAccessTableBody">
-                                <tr>
-                                    <td>USR001</td>
-                                    <td>cfa_manager_mum</td>
-                                    <td>Ramesh Patel</td>
-                                    <td>CFA</td>
-                                    <td>Active</td>
-                                    <td>Device ID: XYZ123</td>
-                                    <td class="action-buttons">
-                                        <button class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</button>
-                                        <button class="btn btn-danger btn-sm"><i class="fas fa-user-slash"></i> Deactivate</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>USR002</td>
-                                    <td>qc_inspector</td>
-                                    <td>Priya Sharma</td>
-                                    <td>Quality Control</td>
-                                    <td>Active</td>
-                                    <td>IP Whitelist: 192.168.1.0/24</td>
-                                    <td class="action-buttons">
-                                        <button class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</button>
-                                        <button class="btn btn-danger btn-sm"><i class="fas fa-user-slash"></i> Deactivate</button>
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -1531,9 +1507,29 @@
     </div>
     <div id="addUserModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h3>Create New User</h3><span class="close-btn" onclick="closeModal('addUserModal')">&times;</span></div>
-            <p>Form for creating new user goes here...</p>
-            <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('addUserModal')">Cancel</button><button type="submit" class="btn btn-success">Create User</button></div>
+            <form id="userForm">
+                <div class="modal-header"><h3>Create New User</h3><span class="close-btn" onclick="closeModal('addUserModal')">&times;</span></div>
+                <div class="form-group">
+                    <label for="newUsername">Username:</label>
+                    <input type="text" id="newUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Password:</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newRole">Role:</label>
+                    <select id="newRole" required>
+                        <option value="cfa">CFA</option>
+                        <option value="super_stockist">Stockist</option>
+                    </select>
+                </div>
+                <div id="userFormError" class="form-error" style="color:red;"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addUserModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Create User</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1919,6 +1915,60 @@
         loadBatches();
         loadPackConfigs();
         loadOrders();
+        loadUsers();
+
+        document.getElementById('userForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            const role = document.getElementById('newRole').value;
+            const err = document.getElementById('userFormError');
+            err.textContent = '';
+            if (!username || username.length < 3) {
+                err.textContent = 'Username must be at least 3 characters.';
+                return;
+            }
+            if (!password || password.length < 6) {
+                err.textContent = 'Password must be at least 6 characters.';
+                return;
+            }
+            const payload = { username, password, role };
+            const resp = await fetch('/api/manufacturer/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                document.getElementById('userForm').reset();
+                closeModal('addUserModal');
+                await loadUsers();
+            } else {
+                const data = await resp.json();
+                err.textContent = data.error || 'Failed to create user';
+            }
+        });
+
+        async function loadUsers() {
+            const resp = await fetch('/api/manufacturer/users', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await resp.json();
+            const body = document.getElementById('userAccessTableBody');
+            body.innerHTML = '';
+            data.forEach(u => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${u.id}</td>
+                    <td>${u.username}</td>
+                    <td></td>
+                    <td>${u.role}</td>
+                    <td>Active</td>
+                    <td></td>
+                    <td></td>`;
+                body.appendChild(row);
+            });
+        }
 
     </script>
 </body>
