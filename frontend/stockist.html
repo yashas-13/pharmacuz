@@ -1220,7 +1220,7 @@
             fetchOrders();
             loadStockistBatches();
             loadStockistPricing();
-            loadStockistMyStock();
+            fetchMyStock();
             loadStockistAuditLogs();
         });
 
@@ -1279,6 +1279,13 @@
             const data = await resp.json();
             dummyStockistData.myOrders = data;
             loadMyOrders();
+        }
+
+        async function fetchMyStock() {
+            const resp = await fetch('/api/inventory', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await resp.json();
+            dummyStockistData.myStock = data;
+            loadStockistMyStock();
         }
 
         // Populate dropdowns with products for order placement
@@ -1383,15 +1390,16 @@
             body.innerHTML = '';
             dummyStockistData.myStock.forEach(s => {
                 const row = document.createElement('tr');
+                const status = s.status || (s.quantity < 50 ? 'Low Stock' : 'Healthy');
                 let statusColor = 'inherit';
-                if (s.status === 'Low Stock') statusColor = '#ffc107';
+                if (status === 'Low Stock') statusColor = '#ffc107';
                 row.innerHTML = `
-                    <td>${s.product_name}</td>
-                    <td>${s.batch_no}</td>
+                    <td>${s.product_name || ''}</td>
+                    <td>${s.batch_no || ''}</td>
                     <td>${s.quantity}</td>
                     <td>${s.exp_date || ''}</td>
                     <td>${s.last_updated || ''}</td>
-                    <td style="color:${statusColor}; font-weight: 500;">${s.status}</td>
+                    <td style="color:${statusColor}; font-weight: 500;">${status}</td>
                 `;
                 body.appendChild(row);
             });
