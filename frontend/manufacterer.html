@@ -1563,6 +1563,13 @@
     <script>
         // Basic JS for sidebar navigation and modal placeholders
         document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            if (!token || role !== 'manufacturer') {
+                window.location.href = 'index.html';
+                return;
+            }
+
             const navLinks = document.querySelectorAll('.sidebar .nav-link');
             const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
             const contentSections = document.querySelectorAll('.main-content .content-section');
