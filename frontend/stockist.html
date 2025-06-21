@@ -772,6 +772,7 @@
                 <li><a href="#pricing-catalogs" class="nav-link" data-section="pricing-catalogs-section"><i class="fas fa-tags"></i> My Pricing (View)</a></li>
                 <li><a href="#place-order" class="nav-link" data-section="place-order-section"><i class="fas fa-shopping-cart"></i> Place New Order</a></li>
                 <li><a href="#my-orders" class="nav-link" data-section="my-orders-section"><i class="fas fa-clipboard-check"></i> My Orders</a></li>
+                <li><a href="#stock-requests" class="nav-link" data-section="stock-requests-section"><i class="fas fa-truck-loading"></i> Stock Requests</a></li>
                 <li><a href="#my-stock" class="nav-link" data-section="my-stock-section"><i class="fas fa-warehouse"></i> My Current Stock</a></li>
                 <li><a href="#qr-scan" class="nav-link" data-section="qr-section"><i class="fas fa-qrcode"></i> QR Scan</a></li>
                 <li><a href="#audit-trail" class="nav-link" data-section="audit-trail-section"><i class="fas fa-clipboard-list"></i> My Audit Log</a></li>
@@ -985,6 +986,35 @@
                 </div>
             </section>
 
+            <section id="stock-requests-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Stock Requests to Manufacturer</h3>
+                    </div>
+                    <form id="stockRequestForm">
+                        <div class="form-group">
+                            <label for="requestProduct">Product</label>
+                            <input type="text" id="requestProduct" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="requestQuantity">Quantity</label>
+                            <input type="number" id="requestQuantity" min="1" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Send Request</button>
+                        </div>
+                    </form>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Product</th><th>Quantity</th></tr>
+                            </thead>
+                            <tbody id="stockRequestTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
             <section id="my-stock-section" class="content-section">
                 <div class="card">
                     <div class="card-header">
@@ -1105,6 +1135,10 @@
         <a href="#my-orders" class="bottom-nav-item" data-section="my-orders-section">
             <i class="fas fa-clipboard-check"></i>
             <span>My Orders</span>
+        </a>
+        <a href="#stock-requests" class="bottom-nav-item" data-section="stock-requests-section">
+            <i class="fas fa-truck-loading"></i>
+            <span>Requests</span>
         </a>
         <a href="#my-stock" class="bottom-nav-item" data-section="my-stock-section">
             <i class="fas fa-warehouse"></i>
@@ -1235,6 +1269,7 @@
             fetchMyStock();
             fetchSalesData();
             loadStockistAuditLogs();
+            loadStockRequests();
             document.getElementById('pricingStateRegionStockist').addEventListener('change', loadStockistPricing);
         });
 
@@ -1474,6 +1509,36 @@
                 body.appendChild(row);
             });
         }
+
+        async function loadStockRequests() {
+            const body = document.getElementById('stockRequestTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            const resp = await fetch('/api/super_stockist/requests', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(r => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${r.id}</td><td>${r.product}</td><td>${r.quantity}</td>`;
+                body.appendChild(row);
+            });
+        }
+
+        document.getElementById('stockRequestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                product: document.getElementById('requestProduct').value,
+                quantity: parseInt(document.getElementById('requestQuantity').value)
+            };
+            const resp = await fetch('/api/super_stockist/requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                document.getElementById('stockRequestForm').reset();
+                await loadStockRequests();
+            }
+        });
 
         // Form submissions
         document.getElementById('placeOrderForm').addEventListener('submit', async function(e) {
