@@ -69,7 +69,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Run the server
-python main.py
+python app.py
 ````
 
 ### 🌐 Frontend
