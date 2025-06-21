@@ -27,7 +27,7 @@
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        const resp = await fetch('/login', {
+        const resp = await fetch('/api/auth/login', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username, password})
@@ -35,16 +35,16 @@
         const data = await resp.json();
         const result = document.getElementById('result');
         if (resp.ok) {
- f2igg8-codex/modify-get_user_from_token-to-return-username-and-role
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.role);
-            window.location.href = '/dashboard';
-
-
-            result.textContent = `Logged in as ${data.role}. Token: ${data.token}`;
- main
- main
- main
+            if (data.role === 'manufacturer') {
+                window.location.href = '/manufacterer.html';
+            } else if (data.role === 'cfa') {
+                window.location.href = '/cfa.html';
+            } else {
+                window.location.href = '/stockist.html';
+            }
+            result.textContent = `Logged in as ${data.role}`;
         } else {
             result.textContent = data.error || 'Login failed';
         }

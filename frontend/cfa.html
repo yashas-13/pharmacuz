@@ -316,6 +316,7 @@
     <div class="dashboard-container">
         <div class="header">
             <h1>CFA Dashboard</h1>
+            <p id="dailySummary" style="margin:0;font-size:0.9rem;"></p>
             <div class="notification-bell">
                 <span class="bell-icon">🔔</span>
                 <span class="notification-badge">3</span>
@@ -555,6 +556,17 @@
                     event.target.classList.add('active');
                     document.getElementById(targetTab).classList.add('active');
                 });
+            });
+
+            // fetch tasks summary
+            const token = localStorage.getItem('token');
+            fetch('/api/cfa/tasks', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json()).then(data => {
+                const summary = document.querySelector('#dailySummary');
+                if (summary) {
+                    summary.textContent = `To pack: ${data.to_pack}, Dispatch: ${data.dispatch}, Pending: ${data.pending}`;
+                }
             });
         });
     </script>

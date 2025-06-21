@@ -1603,20 +1603,51 @@
         }
         renderCharts();
 
-        // Placeholder for form submissions - to be replaced with actual API calls
+        const token = localStorage.getItem('token');
         const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', function(e) {
+
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('productName').value,
+                quantity: 0,
+                warehouse: 'Main'
+            };
+            const resp = await fetch('/api/manufacturer/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                alert('Product added');
+            }
+            closeModal('addProductModal');
+        });
+
+        const recallForm = document.getElementById('recallForm');
+        if (recallForm) {
+            recallForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                console.log(`Form ${this.id} submitted. Data would be sent to backend.`);
-                alert('Form submitted (dev placeholder). Check console.');
-                // Example: const formData = new FormData(this); apiService.submit(this.id, formData);
-                const parentModal = this.closest('.modal');
-                if (parentModal) {
-                    closeModal(parentModal.id);
+                const payload = {
+                    batch: document.getElementById('recallBatchNo').value,
+                    reason: document.getElementById('recallReason').value
+                };
+                const resp = await fetch('/api/manufacturer/recall', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (resp.ok) {
+                    alert('Recall initiated');
                 }
             });
-        });
+        }
 
     </script>
 </body>
