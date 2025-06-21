@@ -69,3 +69,48 @@ def my_sales():
     result = [{'month': k, 'sales': v} for k, v in sorted(stats.items())]
     session.close()
     return jsonify(result)
+
+
+@analytics_bp.route('/analytics/order-trends', methods=['GET'])
+@roles_required('manufacturer', 'cfa', 'super_stockist')
+def order_trends():
+    """Return monthly order counts for BI charts."""
+    session: Session = SessionLocal()
+    rows = session.query(func.strftime('%Y-%m', Order.order_date), func.count(Order.id)).group_by(func.strftime('%Y-%m', Order.order_date)).all()
+    result = [{'month': m, 'orders': c} for m, c in rows]
+    session.close()
+    return jsonify(result)
+
+
+@analytics_bp.route('/analytics/predictions', methods=['GET'])
+@roles_required('manufacturer', 'cfa', 'super_stockist')
+def predictions():
+    """Return dummy prediction insights."""
+    session: Session = SessionLocal()
+    products = session.query(Product).all()
+    result = [
+        {
+            'product_id': p.id,
+            'product_name': p.name,
+            'predicted_demand': 100  # placeholder constant
+        }
+        for p in products
+    ]
+    session.close()
+    return jsonify(result)
+
+
+@analytics_bp.route('/analytics/heatmap-low-stock', methods=['GET'])
+@roles_required('manufacturer', 'cfa', 'super_stockist')
+def heatmap_low_stock():
+    session: Session = SessionLocal()
+    rows = session.query(Inventory.location, Product.name, Inventory.quantity).join(Product, Inventory.product_id == Product.id).all()
+    result = [
+        {
+            'location': loc,
+            'product_name': pname,
+            'quantity': qty
+        } for loc, pname, qty in rows
+    ]
+    session.close()
+    return jsonify(result)

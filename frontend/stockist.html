@@ -773,6 +773,7 @@
                 <li><a href="#place-order" class="nav-link" data-section="place-order-section"><i class="fas fa-shopping-cart"></i> Place New Order</a></li>
                 <li><a href="#my-orders" class="nav-link" data-section="my-orders-section"><i class="fas fa-clipboard-check"></i> My Orders</a></li>
                 <li><a href="#my-stock" class="nav-link" data-section="my-stock-section"><i class="fas fa-warehouse"></i> My Current Stock</a></li>
+                <li><a href="#qr-scan" class="nav-link" data-section="qr-section"><i class="fas fa-qrcode"></i> QR Scan</a></li>
                 <li><a href="#audit-trail" class="nav-link" data-section="audit-trail-section"><i class="fas fa-clipboard-list"></i> My Audit Log</a></li>
             </ul>
         </aside>
@@ -1018,6 +1019,16 @@
                 </div>
             </section>
 
+            <section id="qr-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>QR Code Scanner</h3>
+                    </div>
+                    <button class="btn btn-primary" id="startScanBtnStockist"><i class="fas fa-qrcode"></i> Scan</button>
+                    <div id="qrReaderStockist" style="width:300px; display:none;"></div>
+                </div>
+            </section>
+
             <section id="audit-trail-section" class="content-section">
                 <div class="card">
                     <div class="card-header">
@@ -1105,6 +1116,7 @@
         </a>
     </nav>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
         let token = '';
         // Basic JS for sidebar navigation and modal placeholders
@@ -1519,6 +1531,17 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => { await fetchSalesData(); renderStockistCharts(); });
+
+        document.getElementById('startScanBtnStockist').addEventListener('click', function() {
+            const qrDiv = document.getElementById('qrReaderStockist');
+            qrDiv.style.display = 'block';
+            const scanner = new Html5Qrcode('qrReaderStockist');
+            scanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: 250 }, (text) => {
+                alert('QR: ' + text);
+                scanner.stop();
+                qrDiv.style.display = 'none';
+            });
+        });
     </script>
 </body>
 </html>

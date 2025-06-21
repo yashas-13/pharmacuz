@@ -774,6 +774,7 @@
                 <li><a href="#incoming-orders" class="nav-link" data-section="incoming-orders-section"><i class="fas fa-truck-loading"></i> Incoming Orders (SS)</a></li>
                 <li><a href="#outgoing-orders" class="nav-link" data-section="outgoing-orders-section"><i class="fas fa-shipping-fast"></i> Outgoing Orders (Mfr)</a></li>
                 <li><a href="#stock-management" class="nav-link" data-section="stock-management-section"><i class="fas fa-warehouse"></i> My Stock Management</a></li>
+                <li><a href="#grn" class="nav-link" data-section="grn-section"><i class="fas fa-file-alt"></i> GRN</a></li>
                 <li><a href="#stockist-visibility" class="nav-link" data-section="stockist-visibility-section"><i class="fas fa-eye"></i> Downstream Stock Visibility</a></li>
                 <li><a href="#audit-trail" class="nav-link" data-section="audit-trail-section"><i class="fas fa-clipboard-list"></i> Audit & Compliance</a></li>
             </ul>
@@ -1060,6 +1061,31 @@
                             <tbody id="cfaMyStockTableBody">
                                 <!-- Dynamic rows inserted via JS -->
                             </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="grn-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Goods Receipt Notes (GRN)</h3>
+                    </div>
+                    <form id="grnForm">
+                        <div class="form-group">
+                            <label for="grnBatch">Batch</label>
+                            <input type="text" id="grnBatch" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="grnQty">Quantity</label>
+                            <input type="number" id="grnQty" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add GRN</button>
+                    </form>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>ID</th><th>Batch</th><th>Qty</th></tr></thead>
+                            <tbody id="grnTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -1415,6 +1441,7 @@
             loadOutgoingOrders();
             loadCFAMyStock();
             loadRefillSuggestions();
+            loadGRNs();
             loadDownstreamStockVisibility();
             loadCFAAuditLogs();
             renderCFACharts();
@@ -1801,6 +1828,36 @@
                     alertP.textContent = 'Stock levels are healthy.';
                 }
             }
+        }
+
+        document.getElementById('grnForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                batch: document.getElementById('grnBatch').value,
+                quantity: parseInt(document.getElementById('grnQty').value)
+            };
+            const resp = await fetch('/api/cfa/grn', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                document.getElementById('grnForm').reset();
+                await loadGRNs();
+            }
+        });
+
+        async function loadGRNs() {
+            const resp = await fetch('/api/cfa/grn', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            const body = document.getElementById('grnTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            data.forEach(g => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${g.id}</td><td>${g.batch}</td><td>${g.quantity}</td>`;
+                body.appendChild(row);
+            });
         }
 
         document.getElementById('startScanBtn').addEventListener('click', function() {

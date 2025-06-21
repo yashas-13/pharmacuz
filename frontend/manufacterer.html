@@ -770,6 +770,7 @@
                 <li><a href="#batch-master" class="nav-link" data-section="batch-master-section"><i class="fas fa-boxes"></i> Batch Master</a></li>
                 <li><a href="#pack-configs" class="nav-link" data-section="pack-configs-section"><i class="fas fa-box-open"></i> Pack Configs</a></li>
                 <li><a href="#pricing-catalogs" class="nav-link" data-section="pricing-catalogs-section"><i class="fas fa-tags"></i> Pricing Catalogs</a></li>
+                <li><a href="#offers" class="nav-link" data-section="offer-management-section"><i class="fas fa-gift"></i> Offers</a></li>
                 <li><a href="#cfa-management" class="nav-link" data-section="cfa-management-section"><i class="fas fa-warehouse"></i> CFA Management</a></li>
                 <li><a href="#order-approval" class="nav-link" data-section="order-approval-section"><i class="fas fa-clipboard-check"></i> Orders</a></li>
                 <li><a href="#stock-visibility" class="nav-link" data-section="stock-visibility-section"><i class="fas fa-eye"></i> Stock Visibility</a></li>
@@ -808,6 +809,14 @@
                                 <p class="sr-only">Expiry trend chart placeholder</p>
                             </div>
                         </div>
+                        <div class="dashboard-card chart-card">
+                            <div class="card-header">
+                                <h3>Order Trends</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="orderTrendChart"></canvas>
+                            </div>
+                        </div>
                         <div class="dashboard-card">
                             <div class="card-header">
                                 <h3>Low Stock Heatmap</h3>
@@ -823,9 +832,10 @@
                                 <span class="info-icon" title="AI-driven forecasts and recommendations."><i class="fas fa-info-circle"></i></span>
                             </div>
                             <div class="card-content">
-                                <p>Forecasted demand for **Paracetamol 500mg**: <span class="main-metric" style="font-size: 1.8rem;">1,500 units</span></p>
-                                <div class="metric-change positive"><i class="fas fa-arrow-up icon"></i> Demand up 8% next month.</div>
-                                <div class="metric-description">Based on historical sales & seasonal data.</div>
+                                <table>
+                                    <thead><tr><th>Product</th><th>Predicted Demand</th></tr></thead>
+                                    <tbody id="predictionBody"></tbody>
+                                </table>
                             </div>
                         </div>
                          <div class="dashboard-card alert-card error">
@@ -1234,6 +1244,52 @@
                                     <td style="color:#ffc107; font-weight: 500;">Active - Pending Returns</td>
                                 </tr>
                             </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="offer-management-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Scheme &amp; Offer Management</h3>
+                    </div>
+                    <form id="offerForm">
+                        <div class="form-group">
+                            <label for="offerProduct">Product ID</label>
+                            <input type="number" id="offerProduct" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="offerDesc">Description</label>
+                            <input type="text" id="offerDesc">
+                        </div>
+                        <div class="form-group">
+                            <label for="offerDiscount">Discount %</label>
+                            <input type="number" id="offerDiscount" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="offerStart">Start Date</label>
+                            <input type="date" id="offerStart" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="offerEnd">End Date</label>
+                            <input type="date" id="offerEnd" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Offer</button>
+                    </form>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Product</th>
+                                    <th>Description</th>
+                                    <th>Discount</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                </tr>
+                            </thead>
+                            <tbody id="offerTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -1729,8 +1785,21 @@
                     options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
                 });
             }
+            const trendCtx = document.getElementById('orderTrendChart');
+            const trendResp = await fetch('/api/analytics/order-trends', { headers: { 'Authorization': `Bearer ${token}` } });
+            const trendData = trendResp.ok ? await trendResp.json() : [];
+            if (trendCtx) {
+                new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: trendData.map(i => i.month),
+                        datasets: [{ label: 'Orders', data: trendData.map(i => i.orders), borderColor: '#2ecc71' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
             const heatCtx = document.getElementById('lowStockHeatmap');
-            const resp2 = await fetch('/api/analytics/low-stock', { headers: { 'Authorization': `Bearer ${token}` } });
+            const resp2 = await fetch('/api/analytics/heatmap-low-stock', { headers: { 'Authorization': `Bearer ${token}` } });
             const d2 = resp2.ok ? await resp2.json() : [];
             if (heatCtx && heatCtx.getContext) {
                 const ctx = heatCtx.getContext('2d');
@@ -1741,6 +1810,17 @@
                         datasets: [{ label: 'Qty', data: d2.map(i => i.quantity), backgroundColor: 'rgba(231,76,60,0.7)' }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                });
+            }
+            const predResp = await fetch('/api/analytics/predictions', { headers: { 'Authorization': `Bearer ${token}` } });
+            const preds = predResp.ok ? await predResp.json() : [];
+            const predBody = document.getElementById('predictionBody');
+            if (predBody) {
+                predBody.innerHTML = '';
+                preds.forEach(p => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${p.product_name}</td><td>${p.predicted_demand}</td>`;
+                    predBody.appendChild(row);
                 });
             }
         }
@@ -2075,6 +2155,7 @@
         loadUsers();
         loadAuditLogs();
         loadRecalls();
+        loadOffers();
 
         document.getElementById('pricingStateRegion').addEventListener('change', loadPricing);
         document.getElementById('priceForm').addEventListener('submit', async function(e) {
@@ -2189,6 +2270,45 @@
                     <td>${r.reason}</td>
                     <td>${r.start_date}</td>
                     <td>${r.status}</td>`;
+                body.appendChild(row);
+            });
+        }
+
+        document.getElementById('offerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                product_id: document.getElementById('offerProduct').value,
+                description: document.getElementById('offerDesc').value,
+                discount: parseFloat(document.getElementById('offerDiscount').value || '0'),
+                start_date: document.getElementById('offerStart').value,
+                end_date: document.getElementById('offerEnd').value
+            };
+            const resp = await fetch('/api/offers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                document.getElementById('offerForm').reset();
+                await loadOffers();
+            }
+        });
+
+        async function loadOffers() {
+            const resp = await fetch('/api/offers', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            const body = document.getElementById('offerTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            data.forEach(o => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${o.id}</td>
+                    <td>${o.product_id}</td>
+                    <td>${o.description || ''}</td>
+                    <td>${o.discount}</td>
+                    <td>${o.start_date}</td>
+                    <td>${o.end_date}</td>`;
                 body.appendChild(row);
             });
         }
