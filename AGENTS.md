@@ -55,7 +55,7 @@ pharmacuz/
 - Run backend with:
 
 ```bash
-uvicorn backend.routes.main:app --reload
+python  main.py
 ````
 
 * Test auth & routes via:
@@ -64,11 +64,6 @@ uvicorn backend.routes.main:app --reload
 curl -X POST http://localhost:8000/api/auth/login -d 'username=admin&password=admin'
 ```
 
-* Lint Python code:
-
-```bash
-black backend/ && flake8 backend/
-```
 
 * Run unit tests:
 
