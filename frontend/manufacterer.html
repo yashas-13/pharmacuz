@@ -777,6 +777,8 @@
                 <li><a href="#audit-trail" class="nav-link" data-section="audit-trail-section"><i class="fas fa-clipboard-list"></i> Audit & Compliance</a></li>
                 <li><a href="#recall-trigger" class="nav-link" data-section="recall-trigger-section"><i class="fas fa-exclamation-triangle"></i> Recall Trigger</a></li>
                 <li><a href="#user-access" class="nav-link" data-section="user-access-section"><i class="fas fa-users-cog"></i> User Access Control</a></li>
+                <li><a href="#inventory-reconcile" class="nav-link" data-section="inventory-reconcile-section"><i class="fas fa-balance-scale"></i> Inventory Reconcile</a></li>
+                <li><a href="#erp-sync" class="nav-link" data-section="erp-sync-section"><i class="fas fa-sync"></i> ERP Sync</a></li>
             </ul>
         </aside>
 
@@ -1321,6 +1323,35 @@
                 </div>
             </section>
 
+            <section id="inventory-reconcile-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Inventory Reconciliation</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Batch No</th>
+                                    <th>Total Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reconcileTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="erp-sync-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>ERP Sync</h3>
+                    </div>
+                    <button id="downloadSyncBtn" class="btn btn-primary">Download JSON</button>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -1618,6 +1649,14 @@
         <a href="#user-access" class="bottom-nav-item" data-section="user-access-section">
             <i class="fas fa-users-cog"></i>
             <span>Users</span>
+        </a>
+        <a href="#inventory-reconcile" class="bottom-nav-item" data-section="inventory-reconcile-section">
+            <i class="fas fa-balance-scale"></i>
+            <span>Reconcile</span>
+        </a>
+        <a href="#erp-sync" class="bottom-nav-item" data-section="erp-sync-section">
+            <i class="fas fa-sync"></i>
+            <span>Sync</span>
         </a>
     </nav>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
@@ -2364,6 +2403,36 @@
                 await loadStockPoints();
             }
         });
+
+        async function loadReconcile() {
+            const resp = await fetch('/api/inventory/reconcile', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            const body = document.getElementById('reconcileTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            data.forEach(r => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${r.product_id}</td><td>${r.batch_no}</td><td>${r.total_quantity}</td>`;
+                body.appendChild(row);
+            });
+        }
+
+        document.getElementById('downloadSyncBtn').addEventListener('click', async () => {
+            const resp = await fetch('/api/sync/erp', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (resp.ok) {
+                const data = await resp.json();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'erp_sync.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        });
+
+        // Load new sections on startup
+        loadReconcile();
 
     </script>
 </body>
