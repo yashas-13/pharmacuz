@@ -12,6 +12,39 @@ This document outlines checks performed on the repo and a short plan to keep the
 
 No schema mismatches or obvious routing errors were found.
 
+## Feature Review
+
+### Manufacturer
+- Tested `/api/manufacturer/products`, `/api/manufacturer/batches`,
+  `/api/manufacturer/pack-configs` and `/api/manufacturer/users` using a
+  manufacturer token. All endpoints responded with JSON and no errors.
+- Frontend `manufacterer.html` calls these APIs. Charts are placeholders but
+  CRUD operations work when triggered.
+
+### CFA
+- Verified `/api/cfa/grn` for creating and listing GRNs with a CFA token.
+- `cfa.html` fetches products, batches, pricing, orders and inventory through the
+  common API prefixes; responses were empty arrays on a fresh database but the
+  routes executed successfully.
+
+### Super Stockist
+- Confirmed `/api/super_stockist/requests` works for the super-stockist role.
+- `stockist.html` interacts with orders and inventory endpoints and was able to
+  retrieve empty JSON lists during testing.
+
+### Sync Endpoint
+- `/api/sync/erp` aggregates orders and inventory. Tested successfully with an
+  authenticated request returning empty arrays.
+
+Overall the Flask server and SQLite database operate correctly and the
+frontends store JWT tokens to access the APIs.
+
+### Gaps Observed
+- No automated tests are present; `pytest` fails because the `tests/` directory
+  does not exist.
+- Dashboard charts and analytics are placeholders across all HTML pages.
+- Offline caching/service worker has not been implemented yet.
+
 ## Suggested Next Steps
 
 1. **Automated Testing**
