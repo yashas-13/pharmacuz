@@ -1,16 +1,19 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import Session
-from backend.auth import role_required
+from backend.auth import role_required, roles_required
 from backend.database import SessionLocal
 from backend.models.order import Order
 
 order_bp = Blueprint('order', __name__)
 
 @order_bp.route('/orders', methods=['GET', 'POST'])
-@role_required('super_stockist')
+@roles_required('super_stockist', 'manufacturer', 'cfa')
 def orders():
     session: Session = SessionLocal()
     if request.method == 'POST':
+        if request.user['role'] != 'super_stockist':
+            session.close()
+            return jsonify({'error': 'Forbidden'}), 403
         data = request.json or {}
         product = data.get('product')
         quantity = data.get('quantity')
@@ -23,7 +26,11 @@ def orders():
         result = {'id': order.id, 'product': order.product, 'quantity': order.quantity, 'status': order.status}
         session.close()
         return jsonify(result), 201
-    orders = session.query(Order).all()
+    status = request.args.get('status')
+    query = session.query(Order)
+    if status:
+        query = query.filter(Order.status == status)
+    orders = query.all()
     result = [{'id': o.id, 'product': o.product, 'quantity': o.quantity, 'status': o.status} for o in orders]
     session.close()
     return jsonify(result)
