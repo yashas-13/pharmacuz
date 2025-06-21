@@ -1587,18 +1587,17 @@
                     <td>${o.order_date}</td>
                     <td>${o.status}</td>
                     <td class="action-buttons">
-                        <button class="btn btn-success btn-sm approve-order-btn" data-order-id="${o.id}"><i class="fas fa-check"></i> Approve</button>
+                        <button class="btn btn-primary btn-sm forward-order-btn" data-order-id="${o.id}"><i class="fas fa-share"></i> Send to Mfr</button>
                         <button class="btn btn-danger btn-sm reject-order-btn" data-order-id="${o.id}"><i class="fas fa-times"></i> Reject</button>
                     </td>
                 `;
                 body.appendChild(row);
             });
-            document.querySelectorAll('.approve-order-btn').forEach(button => {
-                button.addEventListener('click', function() {
+            document.querySelectorAll('.forward-order-btn').forEach(button => {
+                button.addEventListener('click', async function() {
                     const orderId = this.dataset.orderId;
-                    alert(`Order ${orderId} Approved! (Simulated)`);
-                    // In a real app: send API call to update order status
-                    this.closest('tr').remove(); // Remove from pending list
+                    await fetch(`/api/orders/${orderId}/request-approval`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                    await loadIncomingOrders();
                 });
             });
             document.querySelectorAll('.reject-order-btn').forEach(button => {

@@ -1955,18 +1955,19 @@
         }
 
         async function loadOrders() {
-            const resp = await fetch('/api/orders?status=requested', { headers: { 'Authorization': `Bearer ${token}` } });
+            const resp = await fetch('/api/orders?status=approval_requested', { headers: { 'Authorization': `Bearer ${token}` } });
             const data = await resp.json();
             const list = document.getElementById('orderList');
             list.innerHTML = '';
             data.forEach(o => {
                 const div = document.createElement('div');
                 div.className = 'list-item';
-                div.innerHTML = `<div><strong>#${o.id}</strong> - ${o.product}<p>${o.quantity} units | <span class="status-chip">Requested</span></p></div>`;
+                div.innerHTML = `<div><strong>#${o.id}</strong> - ${o.product}<p>${o.quantity} units | <span class="status-chip">Awaiting Approval</span></p></div>`;
                 const btn = document.createElement('button');
-                btn.textContent = 'Approve';
+                btn.textContent = 'Approve & Dispatch';
                 btn.addEventListener('click', async () => {
                     await fetch(`/api/orders/${o.id}/approve`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                    await fetch(`/api/orders/${o.id}/dispatch`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
                     await loadOrders();
                 });
                 div.appendChild(btn);
