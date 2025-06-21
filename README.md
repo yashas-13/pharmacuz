@@ -69,7 +69,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Run the server
-uvicorn app.main:app --reload
+python main.py
 ````
 
 ### 🌐 Frontend
@@ -97,7 +97,7 @@ Full list in [`product name.txt`](./product%20name.txt)
 
 | Layer      | Technology                            |
 | ---------- | ------------------------------------- |
-| Backend    | Python (RESTAPI / Flask)              |
+| Backend    | Python (RESTAPI , Flask)              |
 | Frontend   | HTML5 + CSS + JS (Vanilla + Chart.js) |
 | Database   | MySQL (via SQLAlchemy ORM)            |
 | Auth       | JWT + Role-based access               |
