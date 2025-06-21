@@ -1550,9 +1550,21 @@
     </div>
     <div id="assignCfaModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h3>Assign CFA / Activate Stock Point</h3><span class="close-btn" onclick="closeModal('assignCfaModal')">&times;</span></div>
-            <p>Form for assigning CFA goes here...</p>
-            <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('assignCfaModal')">Cancel</button><button type="submit" class="btn btn-success">Assign</button></div>
+            <form id="assignCfaForm">
+                <div class="modal-header"><h3>Assign CFA / Activate Stock Point</h3><span class="close-btn" onclick="closeModal('assignCfaModal')">&times;</span></div>
+                <div class="form-group">
+                    <label for="stockPointName">Stock Point Name:</label>
+                    <input type="text" id="stockPointName" required>
+                </div>
+                <div class="form-group">
+                    <label for="cfaUsername">CFA Username:</label>
+                    <input type="text" id="cfaUsername" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('assignCfaModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Assign</button>
+                </div>
+            </form>
         </div>
     </div>
     <div id="addUserModal" class="modal">
@@ -2153,6 +2165,7 @@
         loadOrders();
         loadLiveStock();
         loadUsers();
+        loadStockPoints();
         loadAuditLogs();
         loadRecalls();
         loadOffers();
@@ -2211,6 +2224,27 @@
                     <td>${u.role}</td>
                     <td>Active</td>
                     <td></td>
+                    <td></td>`;
+                body.appendChild(row);
+            });
+        }
+
+        async function loadStockPoints() {
+            const resp = await fetch('/api/manufacturer/stock-points', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!resp.ok) return;
+            const data = await resp.json();
+            const body = document.getElementById('cfaTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            data.forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.id}</td>
+                    <td>${s.cfa_username}</td>
+                    <td>${s.name}</td>
+                    <td>${s.active ? 'Active' : 'Inactive'}</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
                     <td></td>`;
                 body.appendChild(row);
             });
@@ -2312,6 +2346,24 @@
                 body.appendChild(row);
             });
         }
+
+        document.getElementById('assignCfaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('stockPointName').value,
+                cfa_username: document.getElementById('cfaUsername').value
+            };
+            const resp = await fetch('/api/manufacturer/stock-points', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                document.getElementById('assignCfaForm').reset();
+                closeModal('assignCfaModal');
+                await loadStockPoints();
+            }
+        });
 
     </script>
 </body>
