@@ -11,6 +11,7 @@ from backend.models import Base
 from backend.models.order import Order  # ensure table registration
 from backend.models.batch import Batch
 from backend.models.pack_config import PackConfig
+from backend.models.user import User
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
