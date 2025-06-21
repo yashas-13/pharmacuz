@@ -36,7 +36,7 @@
 ```
 
 pharmacuz/
-├── backend/               # Python + FastAPI or Flask backend
+├── backend/               # Python + RESTAPI or Flask backend
 │   ├── models/            # ORM Models (SQLAlchemy / Pydantic)
 │   ├── controllers/       # Logic layer
 │   ├── routes/            # API endpoints
@@ -58,7 +58,7 @@ pharmacuz/
 
 ## ⚙️ Installation
 
-### 🔧 Backend (FastAPI or Flask)
+### 🔧 Backend (RESTAPI or Flask)
 
 ```bash
 # Setup virtual environment
@@ -97,7 +97,7 @@ Full list in [`product name.txt`](./product%20name.txt)
 
 | Layer      | Technology                            |
 | ---------- | ------------------------------------- |
-| Backend    | Python (FastAPI / Flask)              |
+| Backend    | Python (RESTAPI / Flask)              |
 | Frontend   | HTML5 + CSS + JS (Vanilla + Chart.js) |
 | Database   | MySQL (via SQLAlchemy ORM)            |
 | Auth       | JWT + Role-based access               |
