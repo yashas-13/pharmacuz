@@ -1105,36 +1105,7 @@
                                 </tr>
                             </thead>
                             <tbody id="liveStockTableBody">
-                                <tr>
-                                    <td>CFA01 - Mumbai</td>
-                                    <td>PROD001</td>
-                                    <td>Paracetamol 500mg</td>
-                                    <td>B001XYZ</td>
-                                    <td>5000</td>
-                                    <td>2026-01-14</td>
-                                    <td>150</td>
-                                    <td style="color:#28a745; font-weight: 500;">Healthy</td>
-                                </tr>
-                                 <tr>
-                                    <td>SS005 - Pune</td>
-                                    <td>PROD002</td>
-                                    <td>Amoxicillin 250mg</td>
-                                    <td>B003ABC</td>
-                                    <td>200</td>
-                                    <td>2025-07-30</td>
-                                    <td>90</td>
-                                    <td style="color:#ffc107; font-weight: 500;">Nearing Expiry</td>
-                                </tr>
-                                <tr>
-                                    <td>CFA02 - Delhi</td>
-                                    <td>PROD001</td>
-                                    <td>Paracetamol 500mg</td>
-                                    <td>B004DEF</td>
-                                    <td>15000</td>
-                                    <td>2026-02-28</td>
-                                    <td>120</td>
-                                    <td style="color:#fd7e14; font-weight: 500;">Overstocked</td>
-                                </tr>
+                                <!-- data populated by loadLiveStock() -->
                             </tbody>
                         </table>
                     </div>
@@ -2003,10 +1974,31 @@
             });
         }
 
+        async function loadLiveStock() {
+            const resp = await fetch('/api/inventory', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await resp.json();
+            const body = document.getElementById('liveStockTableBody');
+            body.innerHTML = '';
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.location}</td>
+                    <td>${item.product_id}</td>
+                    <td>${item.product_name || ''}</td>
+                    <td>${item.batch_no}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.exp_date || ''}</td>
+                    <td></td>
+                    <td></td>`;
+                body.appendChild(row);
+            });
+        }
+
         loadProducts();
         loadBatches();
         loadPackConfigs();
         loadOrders();
+        loadLiveStock();
         loadUsers();
 
         document.getElementById('userForm').addEventListener('submit', async function(e) {
