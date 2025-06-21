@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stockist Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007bff; /* Blue */
+            --secondary-color: #6c757d; /* Grey */
+            --background-color: #f8f9fa; /* Light grey */
+            --card-background: #ffffff; /* White */
+            --border-color: #e9ecef; /* Light border */
+            --text-color: #343a40; /* Dark text */
+            --success-color: #28a745; /* Green */
+            --warning-color: #ffc107; /* Yellow */
+            --danger-color: #dc3545; /* Red */
+            --info-color: #17a2b8; /* Cyan for info */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Header --- */
+        .header {
+            background-color: var(--card-background);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 1.2em;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .notification-bell {
+            font-size: 1.5em;
+            cursor: pointer;
+            position: relative;
+            color: var(--secondary-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-color);
+            color: white;
+            font-size: 0.6em;
+            padding: 2px 6px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Tabbed Interface --- */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--card-background);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 60px; /* Adjust based on header height */
+            z-index: 900;
+            padding: 0 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-tabs button {
+            flex-shrink: 0;
+            padding: 12px 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            transition: color 0.2s, border-bottom 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-tabs button.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Card Styles --- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card h3 {
+            font-size: 1em;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .card .value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .card .sub-value {
+            font-size: 0.8em;
+            color: var(--secondary-color);
+        }
+
+        /* --- List Styles --- */
+        .list-section {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .list-section h3 {
+            font-size: 1.1em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9em;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item .status-chip {
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        /* Color-coded status chips */
+        .status-chip.requested { background-color: #d1ecf1; color: #0c5460; } /* Info Blue */
+        .status-chip.approved { background-color: #d4edda; color: #155724; } /* Green */
+        .status-chip.in-transit { background-color: #fff3cd; color: #856404; } /* Yellow */
+        .status-chip.delivered { background-color: #d4edda; color: #155724; } /* Green */
+        .status-chip.new-offer { background-color: #e0f7fa; color: #00838f; } /* Light cyan */
+        .status-chip.reorder-sugg { background-color: #f0f0f0; color: #6c757d; border: 1px dashed #6c757d; } /* Dashed Grey */
+
+
+        .list-item button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background-color 0.2s;
+        }
+        .list-item button:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- Product Card (Top Products Ordered) --- */
+        .product-list {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--background-color);
+        }
+        .product-list::-webkit-scrollbar {
+            height: 6px;
+        }
+        .product-list::-webkit-scrollbar-track {
+            background: var(--background-color);
+        }
+        .product-list::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            border: 1px solid var(--background-color);
+        }
+
+        .product-card {
+            flex: 0 0 140px; /* Fixed width for horizontal scroll */
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 10px;
+            text-align: center;
+        }
+        .product-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .product-card h4 {
+            font-size: 0.85em;
+            margin: 0 0 5px 0;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .product-card p {
+            font-size: 0.75em;
+            color: var(--secondary-color);
+            margin: 0;
+        }
+        .product-card button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        .product-card button:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- Order Status Timeline --- */
+        .timeline-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: 30px 0;
+            padding: 0 10px;
+        }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            right: 10px;
+            height: 3px;
+            background-color: var(--border-color);
+            transform: translateY(-50%);
+            z-index: 0;
+        }
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .timeline-dot {
+            width: 15px;
+            height: 15px;
+            background-color: var(--border-color);
+            border-radius: 50%;
+            margin-bottom: 8px;
+            transition: background-color 0.3s;
+        }
+        .timeline-step.active .timeline-dot {
+            background-color: var(--primary-color);
+        }
+        .timeline-label {
+            font-size: 0.75em;
+            color: var(--secondary-color);
+            white-space: nowrap;
+        }
+        .timeline-step.active .timeline-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* --- Offers & Schemes --- */
+        .offer-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--warning-color); /* Highlight with yellow */
+        }
+        .offer-card h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+        .offer-card p {
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+        .offer-card .validity {
+            font-size: 0.8em;
+            color: var(--secondary-color);
+        }
+        .offer-card button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9em;
+            transition: background-color 0.2s;
+        }
+        .offer-card button:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- Stock Delivery History Table --- */
+        .history-table-container {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 15px;
+            margin-bottom: 20px;
+            overflow-x: auto; /* For table responsiveness */
+        }
+        .history-table-container h3 {
+            font-size: 1.1em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        .history-table th, .history-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: left;
+            white-space: nowrap; /* Prevent wrapping in cells */
+        }
+        .history-table th {
+            background-color: var(--background-color);
+            font-weight: 600;
+        }
+        .history-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .history-table .actions {
+            display: flex;
+            gap: 5px;
+        }
+        .history-table .actions button {
+            padding: 5px 10px;
+            font-size: 0.8em;
+            border-radius: 4px;
+        }
+
+        /* --- Reorder Suggestions List --- */
+        .reorder-suggestion-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border-color); /* Dashed border for suggestion */
+            font-size: 0.9em;
+        }
+        .reorder-suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .reorder-suggestion-item .product-info strong {
+            color: var(--primary-color);
+        }
+        .reorder-suggestion-item .suggestion-qty {
+            color: var(--secondary-color);
+            font-size: 0.8em;
+        }
+        .reorder-suggestion-item .add-btn {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background-color 0.2s;
+        }
+        .reorder-suggestion-item .add-btn:hover {
+            background-color: #218838;
+        }
+
+        /* --- Common Dashboard Features --- */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--card-background);
+            border-top: 1px solid var(--border-color);
+            padding: 10px 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+        }
+        .bottom-nav-item {
+            text-align: center;
+            font-size: 0.75em;
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 5px;
+        }
+        .bottom-nav-item i {
+            font-size: 1.5em;
+        }
+        .bottom-nav-item.active {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Stockist Dashboard</h1>
+            <div class="notification-bell">
+                <span class="bell-icon">🔔</span>
+                <span class="notification-badge">4</span>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-button active" data-tab="orders">Orders</button>
+            <button class="tab-button" data-tab="offers">Offers</button>
+            <button class="tab-button" data-tab="history">History</button>
+            <button class="tab-button" data-tab="notifications">Notifications</button>
+        </div>
+
+        <div class="main-content">
+            <div id="orders" class="tab-content active">
+                <h2>Welcome, Stockist Name!</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Next Suggested Order Date</h3>
+                        <div class="value">June 5, 2025</div>
+                        <div class="sub-value">Based on purchase cycle</div>
+                    </div>
+                    <div class="card">
+                        <h3>Last Order Value</h3>
+                        <div class="value">₹15,000</div>
+                        <div class="sub-value">Order #ORD1234 on May 20</div>
+                    </div>
+                </div>
+
+                <div class="list-section">
+                    <h3>Place New Order</h3>
+                    <div class="list-item">
+                        <div>
+                            <p>Quickly select products and create a new order.</p>
+                            <small>(Cart autosaves with prefilled quantities)</small>
+                        </div>
+                        <button onclick="alert('Proceeding to New Order Form!')">Start Order</button>
+                    </div>
+                </div>
+
+                <div class="list-section">
+                    <h3>Order Status Timeline (Last Order: #ORD1234)</h3>
+                    <div class="timeline-container">
+                        <div class="timeline-step active">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Requested</div>
+                        </div>
+                        <div class="timeline-step active">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Approved</div>
+                        </div>
+                        <div class="timeline-step active">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">In-Transit</div>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Delivered</div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; font-size: 0.9em; color: var(--primary-color);">Your order is currently In-Transit!</p>
+                </div>
+
+                <div class="list-section">
+                    <h3>Top Products Ordered</h3>
+                    <div class="product-list">
+                        <div class="product-card">
+                            <img src="https://via.placeholder.com/80/007bff/ffffff?text=ProdA" alt="Product A">
+                            <h4>Product A</h4>
+                            <p>Ordered 10x</p>
+                            <button onclick="alert('Product A added to cart!')">Add to Cart</button>
+                        </div>
+                        <div class="product-card">
+                            <img src="https://via.placeholder.com/80/28a745/ffffff?text=ProdB" alt="Product B">
+                            <h4>Product B</h4>
+                            <p>Ordered 8x</p>
+                            <button onclick="alert('Product B added to cart!')">Add to Cart</button>
+                        </div>
+                        <div class="product-card">
+                            <img src="https://via.placeholder.com/80/ffc107/ffffff?text=ProdC" alt="Product C">
+                            <h4>Product C</h4>
+                            <p>Ordered 6x</p>
+                            <button onclick="alert('Product C added to cart!')">Add to Cart</button>
+                        </div>
+                        <div class="product-card">
+                            <img src="https://via.placeholder.com/80/dc3545/ffffff?text=ProdD" alt="Product D">
+                            <h4>Product D</h4>
+                            <p>Ordered 5x</p>
+                            <button onclick="alert('Product D added to cart!')">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-section">
+                    <h3>Reorder Suggestions</h3>
+                    <div class="reorder-suggestion-item">
+                        <div class="product-info">
+                            <strong>Product X</strong>
+                            <p class="suggestion-qty">Suggested: 20 units (due in 7 days)</p>
+                        </div>
+                        <button class="add-btn" onclick="alert('Product X added to cart!')">Add to Cart</button>
+                    </div>
+                    <div class="reorder-suggestion-item">
+                        <div class="product-info">
+                            <strong>Product Y</strong>
+                            <p class="suggestion-qty">Suggested: 15 units (due in 10 days)</p>
+                        </div>
+                        <button class="add-btn" onclick="alert('Product Y added to cart!')">Add to Cart</button>
+                    </div>
+                    <div class="reorder-suggestion-item">
+                        <div class="product-info">
+                            <strong>Product Z</strong>
+                            <p class="suggestion-qty">Suggested: 10 units (due in 15 days)</p>
+                        </div>
+                        <button class="add-btn" onclick="alert('Product Z added to cart!')">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="offers" class="tab-content">
+                <h2>Active Offers & Schemes</h2>
+                <div class="offer-card">
+                    <h4>Monsoon Bonanza - 15% OFF!</h4>
+                    <p>Flat 15% discount on all orders above ₹25,000 this month.</p>
+                    <p class="validity">Valid: June 1 - June 30, 2025</p>
+                    <button>Shop Now</button>
+                </div>
+                <div class="offer-card">
+                    <h4>Product BOGO Offer</h4>
+                    <p>Buy 1 Box of Product B, Get 1 Pack of Product C Free!</p>
+                    <p class="validity">Valid: May 20 - June 5, 2025</p>
+                    <button>View Eligible Products</button>
+                </div>
+                <div class="offer-card">
+                    <h4>New Stockist Welcome Bonus</h4>
+                    <p>Additional 5% discount on your first three orders.</p>
+                    <p class="validity">Valid: For new sign-ups</p>
+                    <button>Learn More</button>
+                </div>
+            </div>
+
+            <div id="history" class="tab-content">
+                <h2>Stock Delivery History</h2>
+                <div class="history-table-container">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ORD1234</td>
+                                <td>May 20, 2025</td>
+                                <td>Prod A (10), Prod B (5)</td>
+                                <td><span class="status-chip in-transit">In-Transit</span></td>
+                                <td class="actions">
+                                    <button>Track</button>
+                                    <button>Details</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ORD1233</td>
+                                <td>May 15, 2025</td>
+                                <td>Prod C (20), Prod D (10)</td>
+                                <td><span class="status-chip delivered">Delivered</span></td>
+                                <td class="actions">
+                                    <button>Receipt</button>
+                                    <button>Reorder</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ORD1232</td>
+                                <td>May 10, 2025</td>
+                                <td>Prod A (15), Prod E (8)</td>
+                                <td><span class="status-chip delivered">Delivered</span></td>
+                                <td class="actions">
+                                    <button>Receipt</button>
+                                    <button>Reorder</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ORD1231</td>
+                                <td>May 05, 2025</td>
+                                <td>Prod B (12), Prod F (3)</td>
+                                <td><span class="status-chip delivered">Delivered</span></td>
+                                <td class="actions">
+                                    <button>Receipt</button>
+                                    <button>Reorder</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="notifications" class="tab-content">
+                <h2>Notifications</h2>
+                <div class="list-section">
+                    <div class="list-item">
+                        <div>
+                            <strong>Order #ORD1234 Approved!</strong>
+                            <p>Your order has been approved by the manufacturer.</p>
+                        </div>
+                        <span class="status-chip approved">New</span>
+                    </div>
+                    <div class="list-item">
+                        <div>
+                            <strong>Order #ORD1234 Dispatched!</strong>
+                            <p>Your order is now in transit. Tracking available.</p>
+                        </div>
+                        <span class="status-chip in-transit">New</span>
+                    </div>
+                    <div class="list-item">
+                        <div>
+                            <strong>New Scheme: Monsoon Bonanza!</strong>
+                            <p>Check out our exciting new offers for June.</p>
+                        </div>
+                        <span class="status-chip new-offer">New</span>
+                    </div>
+                    <div class="list-item">
+                        <div>
+                            <strong>Order #ORD1233 Delivered!</strong>
+                            <p>Your previous order has been successfully delivered.</p>
+                        </div>
+                        <span class="status-chip delivered">Read</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fab" onclick="alert('Opening New Order Form!');">
+            <i class="fas fa-plus"></i>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="#" class="bottom-nav-item active">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <i class="fas fa-user-circle"></i> Profile
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <i class="fas fa-question-circle"></i> Help
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // --- Tab Switching Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    // Remove active class from all buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding content
+                    const targetTab = event.target.dataset.tab;
+                    event.target.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
