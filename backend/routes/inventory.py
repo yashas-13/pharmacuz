@@ -48,6 +48,7 @@ def list_inventory():
             'product_id': inv.product_id,
             'product_name': name,
             'batch_no': inv.batch_no,
+            'mfg_date': str(inv.mfg_date) if inv.mfg_date else None,
             'exp_date': str(inv.exp_date) if inv.exp_date else None,
             'quantity': inv.quantity
         })
@@ -66,12 +67,14 @@ def add_inventory():
     if not product_id or not batch_no or quantity is None:
         session.close()
         return jsonify({'error': 'Invalid inventory data'}), 400
+    mfg_date = _parse_iso_date(data.get('mfg_date'))
     exp_date = _parse_iso_date(data.get('exp_date'))
     location = data.get('location') or request.user['username']
     inventory = Inventory(
         location=location,
         product_id=product_id,
         batch_no=batch_no,
+        mfg_date=mfg_date,
         exp_date=exp_date,
         quantity=quantity
     )
@@ -82,6 +85,7 @@ def add_inventory():
         'location': inventory.location,
         'product_id': inventory.product_id,
         'batch_no': inventory.batch_no,
+        'mfg_date': str(inventory.mfg_date) if inventory.mfg_date else None,
         'exp_date': str(inventory.exp_date) if inventory.exp_date else None,
         'quantity': inventory.quantity
     }
