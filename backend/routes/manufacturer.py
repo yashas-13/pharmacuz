@@ -1,5 +1,16 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import Session
+from datetime import date
+
+
+def _parse_iso_date(value):
+    """Return a Python ``date`` from an ISO string or ``None``."""
+    if isinstance(value, str) and value:
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            return None
+    return value
 from backend.auth import role_required
 from backend.database import SessionLocal
 from backend.models.product import Product
@@ -120,8 +131,8 @@ def batches():
         if not batch_no or not product_id:
             session.close()
             return jsonify({"error": "Invalid batch data"}), 400
-        mfg_date = data.get("mfg_date")
-        exp_date = data.get("exp_date")
+        mfg_date = _parse_iso_date(data.get("mfg_date"))
+        exp_date = _parse_iso_date(data.get("exp_date"))
         batch = Batch(
             batch_no=batch_no,
             product_id=product_id,
@@ -178,9 +189,9 @@ def update_batch(batch_id):
     batch.batch_no = data.get("batch_no", batch.batch_no)
     batch.product_id = data.get("product_id", batch.product_id)
     if "mfg_date" in data:
-        batch.mfg_date = data["mfg_date"]
+        batch.mfg_date = _parse_iso_date(data["mfg_date"])
     if "exp_date" in data:
-        batch.exp_date = data["exp_date"]
+        batch.exp_date = _parse_iso_date(data["exp_date"])
     batch.mrp = data.get("mrp", batch.mrp)
     batch.quantity = data.get("quantity", batch.quantity)
     session.commit()
