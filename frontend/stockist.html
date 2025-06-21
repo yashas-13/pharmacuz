@@ -1334,18 +1334,20 @@
         }
 
         // Load Batch Information (View Only for Stockist)
-        function loadStockistBatches() {
+        async function loadStockistBatches() {
             const body = document.getElementById('stockistBatchTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyStockistData.batches.forEach(b => {
+            const resp = await fetch('/api/batches', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(b => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${b.id}</td>
                     <td>${b.product_id}</td>
                     <td>${b.mfg_date || ''}</td>
                     <td>${b.exp_date || ''}</td>
-                    <td>${b.mrp.toFixed(2) || ''}</td>
+                    <td>${b.mrp ? b.mrp.toFixed(2) : ''}</td>
                     <td>${b.quantity || ''}</td>
                 `;
                 body.appendChild(row);
@@ -1434,20 +1436,22 @@
         }
 
         // Load Audit Logs for Stockist
-        function loadStockistAuditLogs() {
+        async function loadStockistAuditLogs() {
             const body = document.getElementById('stockistAuditLogTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyStockistData.auditLogs.forEach(log => {
+            const resp = await fetch('/api/audit-logs?role=super_stockist', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(log => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${log.timestamp}</td>
-                    <td>${log.user}</td>
-                    <td>${log.action}</td>
-                    <td>${log.entity}</td>
-                    <td>${log.entity_id}</td>
+                    <td>${log.username || ''}</td>
+                    <td>${log.event_type}</td>
+                    <td></td>
+                    <td></td>
                     <td>${log.details}</td>
-                    <td>${log.ip_address}</td>
+                    <td></td>
                 `;
                 body.appendChild(row);
             });
