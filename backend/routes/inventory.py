@@ -1,10 +1,12 @@
 from datetime import date
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from backend.auth import role_required, roles_required
 from backend.database import SessionLocal
 from backend.models.inventory import Inventory
 from backend.models.product import Product
+from backend.models.audit_log import AuditLog
 
 
 def _parse_iso_date(value):
@@ -14,6 +16,12 @@ def _parse_iso_date(value):
         except ValueError:
             return None
     return value
+
+
+def log_event(session: Session, event_type: str, details: str):
+    log = AuditLog(event_type=event_type, details=details)
+    session.add(log)
+    session.commit()
 
 inventory_bp = Blueprint('inventory', __name__)
 
@@ -50,7 +58,8 @@ def list_inventory():
             'batch_no': inv.batch_no,
             'mfg_date': str(inv.mfg_date) if inv.mfg_date else None,
             'exp_date': str(inv.exp_date) if inv.exp_date else None,
-            'quantity': inv.quantity
+            'quantity': inv.quantity,
+            'low_stock': inv.quantity < 50
         })
     session.close()
     return jsonify(result)
@@ -80,6 +89,7 @@ def add_inventory():
     )
     session.add(inventory)
     session.commit()
+    log_event(session, 'inventory_added', f'{quantity} units of product {product_id} batch {batch_no} added to {location}')
     result = {
         'id': inventory.id,
         'location': inventory.location,
@@ -91,3 +101,24 @@ def add_inventory():
     }
     session.close()
     return jsonify(result), 201
+
+
+@inventory_bp.route('/inventory/reconcile', methods=['GET'])
+@roles_required('manufacturer', 'cfa', 'super_stockist')
+def reconcile_inventory():
+    session: Session = SessionLocal()
+    rows = session.query(
+        Inventory.product_id,
+        Inventory.batch_no,
+        func.sum(Inventory.quantity)
+    ).group_by(Inventory.product_id, Inventory.batch_no).all()
+    result = [
+        {
+            'product_id': pid,
+            'batch_no': batch,
+            'total_quantity': qty
+        }
+        for pid, batch, qty in rows
+    ]
+    session.close()
+    return jsonify(result)

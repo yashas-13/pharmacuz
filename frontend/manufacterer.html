@@ -1966,8 +1966,14 @@
                 const btn = document.createElement('button');
                 btn.textContent = 'Approve & Dispatch';
                 btn.addEventListener('click', async () => {
+                    const batchNo = prompt('Enter batch number to dispatch:');
+                    if (!batchNo) return;
                     await fetch(`/api/orders/${o.id}/approve`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
-                    await fetch(`/api/orders/${o.id}/dispatch`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                    await fetch(`/api/orders/${o.id}/dispatch`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ batch_no: batchNo })
+                    });
                     await loadOrders();
                 });
                 div.appendChild(btn);
@@ -2001,6 +2007,7 @@
         loadOrders();
         loadLiveStock();
         loadUsers();
+        loadAuditLogs();
 
         document.getElementById('userForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -2035,6 +2042,28 @@
                     <td>${u.role}</td>
                     <td>Active</td>
                     <td></td>
+                    <td></td>`;
+                body.appendChild(row);
+            });
+        }
+
+        async function loadAuditLogs() {
+            const resp = await fetch('/api/audit-logs', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!resp.ok) return;
+            const data = await resp.json();
+            const body = document.getElementById('auditLogTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            data.forEach(log => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${log.timestamp}</td>
+                    <td></td>
+                    <td></td>
+                    <td>${log.event_type}</td>
+                    <td></td>
+                    <td></td>
+                    <td>${log.details}</td>
                     <td></td>`;
                 body.appendChild(row);
             });
