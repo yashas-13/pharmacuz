@@ -2047,6 +2047,7 @@
         loadLiveStock();
         loadUsers();
         loadAuditLogs();
+        loadRecalls();
 
         document.getElementById('pricingStateRegion').addEventListener('change', loadPricing);
         document.getElementById('priceForm').addEventListener('submit', async function(e) {
@@ -2125,6 +2126,42 @@
                     <td></td>
                     <td>${log.details}</td>
                     <td></td>`;
+                body.appendChild(row);
+            });
+        }
+
+        document.getElementById('recallForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                batch_no: document.getElementById('recallBatchNo').value,
+                reason: document.getElementById('recallReason').value
+            };
+            const resp = await fetch('/api/recalls', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                document.getElementById('recallForm').reset();
+                await loadRecalls();
+            }
+        });
+
+        async function loadRecalls() {
+            const resp = await fetch('/api/recalls', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            const body = document.getElementById('recallHistoryTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            data.forEach(r => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${r.id}</td>
+                    <td>${r.batch_no}</td>
+                    <td>${r.product_name || ''}</td>
+                    <td>${r.reason}</td>
+                    <td>${r.start_date}</td>
+                    <td>${r.status}</td>`;
                 body.appendChild(row);
             });
         }

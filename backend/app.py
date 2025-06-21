@@ -11,6 +11,7 @@ from backend.routes.inventory import inventory_bp
 from backend.routes.audit import audit_bp
 from backend.routes.sync import sync_bp
 from backend.routes.pricing import pricing_bp
+from backend.routes.recall import recall_bp
 from backend.database import engine, SessionLocal
 from backend.models import Base
 from backend.models.order import Order  # ensure table registration
@@ -21,6 +22,7 @@ from backend.models.user import User
 from backend.models.inventory import Inventory
 from backend.models.pricing_catalog import PricingCatalog
 from backend.models.audit_log import AuditLog
+from backend.models.recall import Recall
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="")
 
@@ -82,6 +84,7 @@ app.register_blueprint(inventory_bp, url_prefix="/api")
 app.register_blueprint(audit_bp, url_prefix="/api")
 app.register_blueprint(sync_bp, url_prefix="/api")
 app.register_blueprint(pricing_bp, url_prefix="/api")
+app.register_blueprint(recall_bp, url_prefix="/api")
 
 
 @app.route("/")
