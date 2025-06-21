@@ -19,10 +19,27 @@ inventory_bp = Blueprint('inventory', __name__)
 
 
 @inventory_bp.route('/inventory', methods=['GET'])
-@role_required('manufacturer')
+@roles_required('manufacturer', 'cfa', 'super_stockist')
 def list_inventory():
+    """Return inventory records.
+
+    - Manufacturer can view all locations, optionally filtering by ``location``
+      query param.
+    - CFA and Super Stockist only view inventory at their own location
+      (their username).
+    """
     session: Session = SessionLocal()
-    rows = session.query(Inventory, Product.name).join(Product, Inventory.product_id == Product.id).all()
+    query = session.query(Inventory, Product.name).join(Product, Inventory.product_id == Product.id)
+
+    user_role = request.user['role']
+    if user_role in ('cfa', 'super_stockist'):
+        query = query.filter(Inventory.location == request.user['username'])
+    else:
+        location_filter = request.args.get('location')
+        if location_filter:
+            query = query.filter(Inventory.location == location_filter)
+
+    rows = query.all()
     result = []
     for inv, name in rows:
         result.append({
