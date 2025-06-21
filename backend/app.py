@@ -5,8 +5,10 @@ from backend.auth import auth_bp
 from backend.routes.manufacturer import manufacturer_bp
 from backend.routes.cfa import cfa_bp
 from backend.routes.super_stockist import super_stockist_bp
+from backend.routes.order import order_bp
 from backend.database import engine
 from backend.models import Base
+from backend.models.order import Order  # ensure table registration
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
@@ -18,6 +20,7 @@ app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(manufacturer_bp, url_prefix='/api/manufacturer')
 app.register_blueprint(cfa_bp, url_prefix='/api/cfa')
 app.register_blueprint(super_stockist_bp, url_prefix='/api/super_stockist')
+app.register_blueprint(order_bp, url_prefix='/api')
 
 @app.route('/')
 def index():
