@@ -61,7 +61,7 @@ python  main.py
 * Test auth & routes via:
 
 ```bash
-curl -X POST http://localhost:8000/api/auth/login -d 'username=admin&password=admin'
+curl -X POST http://localhost:any/api/auth/login -d 'username=admin&password=admin'
 ```
 
 
