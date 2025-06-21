@@ -4,6 +4,8 @@ from datetime import date
 from backend.auth import role_required, roles_required
 from backend.database import SessionLocal
 from backend.models.order import Order
+from backend.models.product import Product
+from backend.models.inventory import Inventory
 
 order_bp = Blueprint('order', __name__)
 
@@ -69,6 +71,34 @@ def orders():
     return jsonify(result)
 
 
+@order_bp.route('/orders/<int:order_id>/request-approval', methods=['POST'])
+@role_required('cfa')
+def request_approval(order_id):
+    """CFA forwards order to manufacturer for approval."""
+    session: Session = SessionLocal()
+    order = session.query(Order).get(order_id)
+    if not order:
+        session.close()
+        return jsonify({'error': 'Order not found'}), 404
+    if order.status != 'requested':
+        session.close()
+        return jsonify({'error': 'Order cannot be forwarded'}), 400
+    order.status = 'approval_requested'
+    order.target = 'manufacturer'
+    session.commit()
+    result = {
+        'id': order.id,
+        'product': order.product,
+        'quantity': order.quantity,
+        'status': order.status,
+        'placed_by': order.placed_by,
+        'target': order.target,
+        'order_date': str(order.order_date)
+    }
+    session.close()
+    return jsonify(result)
+
+
 @order_bp.route('/orders/<int:order_id>/approve', methods=['POST'])
 @role_required('manufacturer')
 def approve_order(order_id):
@@ -78,7 +108,7 @@ def approve_order(order_id):
     if not order:
         session.close()
         return jsonify({'error': 'Order not found'}), 404
-    if order.status != 'requested':
+    if order.status != 'approval_requested':
         session.close()
         return jsonify({'error': 'Order cannot be approved'}), 400
     order.status = 'approved'
@@ -94,9 +124,9 @@ def approve_order(order_id):
 
 
 @order_bp.route('/orders/<int:order_id>/dispatch', methods=['POST'])
-@role_required('cfa')
+@roles_required('cfa', 'manufacturer')
 def dispatch_order(order_id):
-    """CFA dispatches an approved order."""
+    """Dispatch an approved order."""
     session: Session = SessionLocal()
     order = session.query(Order).get(order_id)
     if not order:
@@ -133,6 +163,17 @@ def deliver_order(order_id):
         session.close()
         return jsonify({'error': 'Order cannot be marked delivered'}), 400
     order.status = 'delivered'
+    # Add delivered quantity to stockist inventory
+    product = session.query(Product).filter_by(name=order.product).first()
+    if product:
+        inventory = Inventory(
+            location=request.user['username'],
+            product_id=product.id,
+            batch_no='N/A',
+            exp_date=None,
+            quantity=order.quantity
+        )
+        session.add(inventory)
     session.commit()
     result = {
         'id': order.id,

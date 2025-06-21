@@ -1370,15 +1370,24 @@
             body.innerHTML = '';
             data.forEach(o => {
                 const row = document.createElement('tr');
+                const action = o.status === 'in_transit' ? `<button class="btn btn-success btn-sm accept-order-btn" data-order-id="${o.id}">Accept</button>` : '';
                 row.innerHTML = `
                     <td>${o.id}</td>
-                    <td>-</td>
+                    <td>${o.target}</td>
                     <td>${o.product}</td>
                     <td>${o.quantity}</td>
-                    <td>-</td>
-                    <td>${o.status}</td>
+                    <td>${o.order_date}</td>
+                    <td>${o.status} ${action}</td>
                 `;
                 body.appendChild(row);
+            });
+            document.querySelectorAll('.accept-order-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const orderId = this.dataset.orderId;
+                    await fetch(`/api/orders/${orderId}/deliver`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                    await fetchMyStock();
+                    await loadMyOrders();
+                });
             });
             document.getElementById('total-orders-placed').textContent = data.length;
         }
