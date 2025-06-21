@@ -13,7 +13,7 @@ pharmacuz/
 ├── backend/
 │   ├── models/           # ORM models with SQLAlchemy (or Pydantic)
 │   ├── controllers/      # Business logic layer
-│   ├── routes/           # REST APIs (FastAPI or Flask)
+│   ├── routes/           # REST APIs (restapi or Flask)
 │   ├── middleware/       # JWT & RBAC logic
 │   └── database/         # Migration scripts and seeders
 ├── frontend/
@@ -43,7 +43,7 @@ pharmacuz/
 
 ### ⚒️ Tasks Agents Can Perform
 - Add CRUD APIs for stock, orders, users, schemes
-- Generate FastAPI/Flask route handlers using JWT-auth guards
+- Generate restapi/Flask route handlers using JWT-auth guards
 - Create Chart.js dashboards from dummy API data
 - Add notification alerts based on JSON inputs
 - Automatically adjust HTML tabs and content sections
@@ -152,7 +152,7 @@ SyntaxError: invalid syntax
 ## 📚 Reference Docs
 
 * Chart.js: [https://www.chartjs.org/docs/latest/](https://www.chartjs.org/docs/latest/)
-* FastAPI: [https://fastapi.tiangolo.com/](https://fastapi.tiangolo.com/)
+* restapi: [https://restapi.tiangolo.com/](https://restapi.tiangolo.com/)
 * Flask: [https://flask.palletsprojects.com/](https://flask.palletsprojects.com/)
 * JWT Auth: [https://jwt.io/](https://jwt.io/)
 
