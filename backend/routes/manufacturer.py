@@ -5,6 +5,7 @@ from backend.database import SessionLocal
 from backend.models.product import Product
 from backend.models.batch import Batch
 from backend.models.pack_config import PackConfig
+from backend.models.user import User
 
 manufacturer_bp = Blueprint('manufacturer', __name__)
 
@@ -196,5 +197,38 @@ def update_pack_config(config_id):
         'units_per_pack': config.units_per_pack,
         'dimensions': config.dimensions
     }
+    session.close()
+    return jsonify(result)
+
+
+@manufacturer_bp.route('/users', methods=['GET', 'POST'])
+@role_required('manufacturer')
+def manage_users():
+    """Create or list CFA and stockist users."""
+    session: Session = SessionLocal()
+    if request.method == 'POST':
+        data = request.json or {}
+        username = data.get('username')
+        password = data.get('password')
+        role = data.get('role')
+        if not username or not password or role not in ('cfa', 'super_stockist'):
+            session.close()
+            return jsonify({'error': 'Invalid user data'}), 400
+        if session.query(User).filter_by(username=username).first():
+            session.close()
+            return jsonify({'error': 'User already exists'}), 400
+        user = User(username=username, password=password, role=role)
+        session.add(user)
+        session.commit()
+        result = {'id': user.id, 'username': user.username, 'role': user.role}
+        session.close()
+        return jsonify(result), 201
+
+    role_filter = request.args.get('role')
+    query = session.query(User)
+    if role_filter:
+        query = query.filter(User.role == role_filter)
+    users = query.all()
+    result = [{'id': u.id, 'username': u.username, 'role': u.role} for u in users]
     session.close()
     return jsonify(result)
