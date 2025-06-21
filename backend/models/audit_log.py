@@ -7,5 +7,7 @@ class AuditLog(Base):
     id = Column(Integer, primary_key=True)
     event_type = Column(String, nullable=False)
     details = Column(String, nullable=False)
+    username = Column(String, nullable=True)
+    role = Column(String, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
 

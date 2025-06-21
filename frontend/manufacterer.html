@@ -1868,7 +1868,7 @@
                 units_per_pack: document.getElementById('unitsPerPack').value,
                 dimensions: document.getElementById('packDimensions').value
             };
-            const resp = await fetch('/api/manufacturer/pack-configs', {
+            const resp = await fetch('/api/pack-configs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -1888,7 +1888,7 @@
                 units_per_pack: document.getElementById('editUnitsPerPack').value,
                 dimensions: document.getElementById('editPackDimensions').value
             };
-            const resp = await fetch(`/api/manufacturer/pack-configs/${id}`, {
+            const resp = await fetch(`/api/pack-configs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -1935,7 +1935,7 @@
         }
 
         async function loadPackConfigs() {
-            const resp = await fetch('/api/manufacturer/pack-configs', { headers: { 'Authorization': `Bearer ${token}` } });
+            const resp = await fetch('/api/pack-configs', { headers: { 'Authorization': `Bearer ${token}` } });
             const data = await resp.json();
             const body = document.getElementById('packConfigTableBody');
             body.innerHTML = '';
@@ -1958,7 +1958,7 @@
                 delBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
                 delBtn.addEventListener('click', async () => {
                     if (confirm('Delete config?')) {
-                        await fetch(`/api/manufacturer/pack-configs/${c.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                        await fetch(`/api/pack-configs/${c.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
                         await loadPackConfigs();
                     }
                 });
@@ -2109,7 +2109,7 @@
         }
 
         async function loadAuditLogs() {
-            const resp = await fetch('/api/audit-logs', { headers: { 'Authorization': `Bearer ${token}` } });
+            const resp = await fetch('/api/audit-logs?role=manufacturer', { headers: { 'Authorization': `Bearer ${token}` } });
             if (!resp.ok) return;
             const data = await resp.json();
             const body = document.getElementById('auditLogTableBody');

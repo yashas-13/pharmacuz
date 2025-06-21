@@ -1535,11 +1535,13 @@
         }
 
         // Load Pack Configs (View Only for CFA)
-        function loadCFAPackConfigs() {
+        async function loadCFAPackConfigs() {
             const body = document.getElementById('cfaPackConfigTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyCFAData.packConfigs.forEach(c => {
+            const resp = await fetch('/api/pack-configs', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(c => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${c.id}</td>
@@ -1640,18 +1642,20 @@
         }
 
         // Load CFA's Own Stock
-        function loadCFAMyStock() {
+        async function loadCFAMyStock() {
             const body = document.getElementById('cfaMyStockTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyCFAData.cfaMyStock.forEach(s => {
+            const resp = await fetch('/api/inventory', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(s => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${s.product_name}</td>
+                    <td>${s.product_name || s.product_id}</td>
                     <td>${s.batch_no}</td>
                     <td>${s.quantity}</td>
                     <td>${s.exp_date || ''}</td>
-                    <td>${s.last_updated || ''}</td>
+                    <td>${s.mfg_date || ''}</td>
                     <td class="action-buttons">
                         <button class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Adjust</button>
                     </td>
@@ -1661,48 +1665,51 @@
         }
 
         // Load Downstream Stockist Visibility (CFA can see SS stock)
-        function loadDownstreamStockVisibility() {
-            // This would fetch from a combined inventory view or iterate through SS entities
-            // For now, using hardcoded dummy data for demonstration
+        async function loadDownstreamStockVisibility() {
             const body = document.getElementById('downstreamStockTableBody');
             if (!body) return;
             body.innerHTML = '';
-            const dummyDownstreamStock = [
-                { stockist: 'SS001 - Delhi', product_name: 'Paracetamol 500mg', batch_no: 'B001XYZ', quantity: 500, exp_date: '2026-01-14', status: 'Healthy' },
-                { stockist: 'SS002 - Chennai', product_name: 'Amoxicillin 250mg', batch_no: 'B003ABC', quantity: 50, exp_date: '2025-07-30', status: 'Low Stock' },
-                { stockist: 'SS001 - Delhi', product_name: 'Antacid Liquid', batch_no: 'B004JKL', quantity: 120, exp_date: '2025-11-15', status: 'Healthy' }
-            ];
-            dummyDownstreamStock.forEach(s => {
+            const stockists = ['SS001', 'SS002'];
+            const allData = [];
+            await Promise.all(stockists.map(async id => {
+                const resp = await fetch(`/api/inventory?location=${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (resp.ok) {
+                    const rows = await resp.json();
+                    rows.forEach(r => allData.push({ stockist: id, ...r }));
+                }
+            }));
+            allData.forEach(s => {
                 const row = document.createElement('tr');
-                let statusColor = 'inherit';
-                if (s.status === 'Low Stock') statusColor = '#ffc107';
+                let statusColor = s.low_stock ? '#ffc107' : 'inherit';
                 row.innerHTML = `
                     <td>${s.stockist}</td>
-                    <td>${s.product_name}</td>
+                    <td>${s.product_name || s.product_id}</td>
                     <td>${s.batch_no}</td>
                     <td>${s.quantity}</td>
                     <td>${s.exp_date || ''}</td>
-                    <td style="color:${statusColor}; font-weight: 500;">${s.status}</td>
+                    <td style="color:${statusColor}; font-weight: 500;">${s.low_stock ? 'Low Stock' : 'Healthy'}</td>
                 `;
                 body.appendChild(row);
             });
         }
 
         // Load Audit Logs for CFA
-        function loadCFAAuditLogs() {
+        async function loadCFAAuditLogs() {
             const body = document.getElementById('cfaAuditLogTableBody');
             if (!body) return;
             body.innerHTML = '';
-            dummyCFAData.auditLogs.forEach(log => {
+            const resp = await fetch('/api/audit-logs?role=cfa', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : [];
+            data.forEach(log => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${log.timestamp}</td>
-                    <td>${log.user}</td>
-                    <td>${log.action}</td>
-                    <td>${log.entity}</td>
-                    <td>${log.entity_id}</td>
+                    <td>${log.username || ''}</td>
+                    <td>${log.event_type}</td>
+                    <td></td>
+                    <td></td>
                     <td>${log.details}</td>
-                    <td>${log.ip_address}</td>
+                    <td></td>
                 `;
                 body.appendChild(row);
             });
@@ -1731,25 +1738,44 @@
             closeModal('placeMfrOrderModal');
         });
 
-        document.getElementById('receiveStockForm').addEventListener('submit', function(e) {
+        document.getElementById('receiveStockForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const productId = document.getElementById('receiveProductId').value;
             const batchNo = document.getElementById('receiveBatchNo').value;
-            const quantity = document.getElementById('receiveQuantity').value;
-            alert(`Received Stock: Product ${productId}, Batch ${batchNo}, Quantity ${quantity} (Simulated)`);
+            const quantity = parseInt(document.getElementById('receiveQuantity').value);
+            const expDate = document.getElementById('receiveExpDate').value;
+            await fetch('/api/inventory', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ product_id: productId, batch_no: batchNo, quantity, exp_date: expDate })
+            });
+            await fetch('/api/cfa/stock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ product_id: productId, batch_no: batchNo, quantity, action: 'received' })
+            });
+            await loadCFAMyStock();
             closeModal('cfaAddStockModal');
-            // In real app: update cfaMyStock and refresh
         });
 
-        document.getElementById('dispatchStockForm').addEventListener('submit', function(e) {
+        document.getElementById('dispatchStockForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const productId = document.getElementById('dispatchProductId').value;
             const batchNo = document.getElementById('dispatchBatchNo').value;
-            const quantity = document.getElementById('dispatchQuantity').value;
+            const quantity = parseInt(document.getElementById('dispatchQuantity').value);
             const stockistId = document.getElementById('dispatchToStockistId').value;
-            alert(`Dispatched Stock: Product ${productId}, Batch ${batchNo}, Quantity ${quantity} to ${stockistId} (Simulated)`);
+            await fetch('/api/inventory', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ product_id: productId, batch_no: batchNo, quantity, location: stockistId })
+            });
+            await fetch('/api/cfa/stock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ product_id: productId, batch_no: batchNo, quantity, action: 'dispatched' })
+            });
+            await loadCFAMyStock();
             closeModal('cfaDispatchStockModal');
-            // In real app: update cfaMyStock and SS stock, refresh
         });
 
 

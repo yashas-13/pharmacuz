@@ -12,7 +12,9 @@ recall_bp = Blueprint('recall', __name__)
 
 
 def log_event(session: Session, event_type: str, details: str):
-    log = AuditLog(event_type=event_type, details=details)
+    username = getattr(request, 'user', {}).get('username') if hasattr(request, 'user') else None
+    role = getattr(request, 'user', {}).get('role') if hasattr(request, 'user') else None
+    log = AuditLog(event_type=event_type, details=details, username=username, role=role)
     session.add(log)
     session.commit()
 
