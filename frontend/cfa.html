@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CFA Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007bff; /* Blue */
+            --secondary-color: #6c757d; /* Grey */
+            --background-color: #f8f9fa; /* Light grey */
+            --card-background: #ffffff; /* White */
+            --border-color: #e9ecef; /* Light border */
+            --text-color: #343a40; /* Dark text */
+            --success-color: #28a745; /* Green */
+            --warning-color: #ffc107; /* Yellow */
+            --danger-color: #dc3545; /* Red */
+            --info-color: #17a2b8; /* Cyan for info */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Header --- */
+        .header {
+            background-color: var(--card-background);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 1.2em;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .notification-bell {
+            font-size: 1.5em;
+            cursor: pointer;
+            position: relative;
+            color: var(--secondary-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-color);
+            color: white;
+            font-size: 0.6em;
+            padding: 2px 6px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Tabbed Interface --- */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--card-background);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 60px; /* Adjust based on header height */
+            z-index: 900;
+            padding: 0 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-tabs button {
+            flex-shrink: 0;
+            padding: 12px 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            transition: color 0.2s, border-bottom 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-tabs button.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Card Styles --- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card h3 {
+            font-size: 1em;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .card .value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .card .sub-value {
+            font-size: 0.8em;
+            color: var(--secondary-color);
+        }
+
+        /* --- List Styles --- */
+        .list-section {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .list-section h3 {
+            font-size: 1.1em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9em;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item .status-chip {
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        /* Color-coded status chips */
+        .status-chip.pending { background-color: #fff3cd; color: #856404; } /* Yellow */
+        .status-chip.approved { background-color: #d4edda; color: #155724; } /* Green */
+        .status-chip.packed { background-color: #cce5ff; color: #004085; } /* Light Blue */
+        .status-chip.shipped { background-color: #e2e3e5; color: #383d41; } /* Grey */
+        .status-chip.delivered { background-color: #d4edda; color: #155724; } /* Green */
+        .status-chip.error { background-color: #f8d7da; color: #721c24; } /* Red */
+        .status-chip.reorder { background-color: #f0f0f0; color: #6c757d; border: 1px dashed #6c757d; } /* Dashed Grey */
+
+        .list-item button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background-color 0.2s;
+        }
+        .list-item button:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- Live Feed / History Item --- */
+        .feed-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9em;
+        }
+        .feed-item:last-child {
+            border-bottom: none;
+        }
+        .feed-item .icon {
+            font-size: 1.2em;
+            color: var(--secondary-color);
+        }
+        .feed-item .details {
+            flex-grow: 1;
+        }
+        .feed-item .details p {
+            margin: 0;
+        }
+        .feed-item .details .timestamp {
+            font-size: 0.75em;
+            color: var(--secondary-color);
+            margin-top: 5px;
+        }
+
+        /* --- Floating Action Button (FAB) --- */
+        .fab {
+            position: fixed;
+            bottom: 80px; /* Above bottom nav */
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8em;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            z-index: 1001;
+        }
+        .fab:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+
+        /* --- Common Dashboard Features --- */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--card-background);
+            border-top: 1px solid var(--border-color);
+            padding: 10px 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+        }
+        .bottom-nav-item {
+            text-align: center;
+            font-size: 0.75em;
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 5px;
+        }
+        .bottom-nav-item i {
+            font-size: 1.5em;
+        }
+        .bottom-nav-item.active {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>CFA Dashboard</h1>
+            <div class="notification-bell">
+                <span class="bell-icon">🔔</span>
+                <span class="notification-badge">3</span>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-button active" data-tab="dispatch">Dispatch</button>
+            <button class="tab-button" data-tab="inventory">Inventory</button>
+            <button class="tab-button" data-tab="history">History</button>
+            <button class="tab-button" data-tab="notifications">Notifications</button>
+        </div>
+
+        <div class="main-content">
+            <div id="dispatch" class="tab-content active">
+                <h2>Today's Tasks</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Orders to Dispatch</h3>
+                        <div class="value">12</div>
+                        <div class="sub-value">Ready for pickup</div>
+                    </div>
+                    <div class="card">
+                        <h3>Items to Pack</h3>
+                        <div class="value">250</div>
+                        <div class="sub-value">Across 5 orders</div>
+                    </div>
+                    <div class="card">
+                        <h3>Updates Pending</h3>
+                        <div class="value">3</div>
+                        <div class="sub-value">Delivery confirmations</div>
+                    </div>
+                </div>
+
+                <div class="list-section">
+                    <h3>Dispatch Queue (Approved Orders)</h3>
+                    <div class="list-item">
+                        <div>
+                            <strong>#ORD1001</strong> - Customer A
+                            <p>5 items | <span class="status-chip approved">Approved</span></p>
+                        </div>
+                        <button>Start Packing</button>
+                    </div>
+                    <div class="list-item">
+                        <div>
+                            <strong>#ORD1002</strong> - Customer B
+                            <p>12 items | <span class="status-chip packed">Packed</span></p>
+                        </div>
+                        <button>Generate Slip</button>
+                    </div>
+                    <div class="list-item">
+                        <div>
+                            <strong>#ORD1003</strong> - Customer C
+                            <p>3 items | <span class="status-chip approved">Approved</span></p>
+                        </div>
+                        <button>Start Packing</button>
+                    </div>
+                    <div class="list-item">
+                        <div>
+                            <strong>#ORD1004</strong> - Customer D
+                            <p>8 items | <span class="status-chip packed">Packed</span></p>
+                        </div>
+                        <button>Mark Shipped</button>
+                    </div>
+                </div>
+
+                <div class="list-section">
+                    <h3>Live Status Feed</h3>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-box"></i></span>
+                        <div class="details">
+                            <p>Order <strong>#ORD1002</strong>: <span class="status-chip packed">Packed</span></p>
+                            <span class="timestamp">10:30 AM</span>
+                        </div>
+                    </div>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-truck"></i></span>
+                        <div class="details">
+                            <p>Order <strong>#ORD998</strong>: <span class="status-chip shipped">Shipped</span></p>
+                            <span class="timestamp">11:15 AM</span>
+                        </div>
+                    </div>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-check-circle"></i></span>
+                        <div class="details">
+                            <p>Order <strong>#ORD990</strong>: <span class="status-chip delivered">Delivered</span></p>
+                            <span class="timestamp">1:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="inventory" class="tab-content">
+                <div class="list-section">
+                    <h3>Inventory Movement Tracker</h3>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-arrow-alt-circle-right"></i></span>
+                        <div class="details">
+                            <p>Product X: <strong>-50 units</strong> (Dispatch for ORD1001)</p>
+                            <span class="timestamp">10:45 AM</span>
+                        </div>
+                    </div>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-arrow-alt-circle-left"></i></span>
+                        <div class="details">
+                            <p>Product Y: <strong>+100 units</strong> (Received from Mfg.)</p>
+                            <span class="timestamp">09:00 AM</span>
+                        </div>
+                    </div>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-arrow-alt-circle-right"></i></span>
+                        <div class="details">
+                            <p>Product Z: <strong>-12 units</strong> (Dispatch for ORD998)</p>
+                            <span class="timestamp">Yesterday, 4:30 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-section">
+                    <h3>Stock Refill Alerts</h3>
+                    <div class="list-item">
+                        <div>
+                            <strong>Product A</strong>
+                            <p>Current: 120 units | <span class="status-chip reorder">Reorder Suggestion</span></p>
+                        </div>
+                        <button>Details</button>
+                    </div>
+                    <div class="list-item">
+                        <div>
+                            <strong>Product C</strong>
+                            <p>Current: 50 units | <span class="status-chip reorder">Reorder Suggestion</span></p>
+                        </div>
+                        <button>Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="history" class="tab-content">
+                <h2>Order History (Dispatched Batches)</h2>
+                <div class="list-section">
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                        <div class="details">
+                            <p><strong>Batch #B-MAY22-001</strong> (12 Orders)</p>
+                            <span class="timestamp">May 22, 2025</span>
+                        </div>
+                        <button>View</button>
+                    </div>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                        <div class="details">
+                            <p><strong>Batch #B-MAY21-002</strong> (8 Orders)</p>
+                            <span class="timestamp">May 21, 2025</span>
+                        </div>
+                        <button>View</button>
+                    </div>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                        <div class="details">
+                            <p><strong>Batch #B-MAY21-001</strong> (15 Orders)</p>
+                            <span class="timestamp">May 21, 2025</span>
+                        </div>
+                        <button>View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notifications" class="tab-content">
+                <h2>Notifications Panel</h2>
+                <div class="list-section">
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-check-circle"></i></span>
+                        <div class="details">
+                            <p>New Approved Order: <strong>#ORD1005</strong> ready for dispatch.</p>
+                            <span class="timestamp">Just now</span>
+                        </div>
+                    </div>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+                        <div class="details">
+                            <p>Packing Error: <strong>Order #999</strong> - Item mismatch detected.</p>
+                            <span class="timestamp">1 hour ago</span>
+                        </div>
+                    </div>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-truck-loading"></i></span>
+                        <div class="details">
+                            <p>Delivery Issue: <strong>Order #990</strong> - Customer unavailable.</p>
+                            <span class="timestamp">3 hours ago</span>
+                        </div>
+                    </div>
+                    <div class="feed-item">
+                        <span class="icon"><i class="fas fa-boxes"></i></span>
+                        <div class="details">
+                            <p>Inventory Alert: Product A stock below safety level.</p>
+                            <span class="timestamp">Yesterday</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fab" onclick="alert('QR Code Scanner Activated!');">
+            <i class="fas fa-qrcode"></i>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="#" class="bottom-nav-item active">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <i class="fas fa-user-circle"></i> Profile
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <i class="fas fa-question-circle"></i> Help
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // --- Tab Switching Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    // Remove active class from all buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding content
+                    const targetTab = event.target.dataset.tab;
+                    event.target.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
