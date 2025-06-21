@@ -1221,6 +1221,7 @@
             loadStockistBatches();
             loadStockistPricing();
             fetchMyStock();
+            fetchSalesData();
             loadStockistAuditLogs();
             document.getElementById('pricingStateRegionStockist').addEventListener('change', loadStockistPricing);
         });
@@ -1297,6 +1298,11 @@
             } else {
                 alertBox.style.display = 'none';
             }
+        }
+
+        async function fetchSalesData() {
+            const resp = await fetch('/api/analytics/my-sales', { headers: { 'Authorization': `Bearer ${token}` } });
+            dummyStockistData.mySales = resp.ok ? await resp.json() : [];
         }
 
         // Populate dropdowns with products for order placement
@@ -1482,9 +1488,7 @@
 
 
 
-        // Placeholder for chart rendering on Stockist dashboard
-        function renderStockistCharts() {
-            // Simulate data for dashboard charts
+        async function renderStockistCharts() {
             const stockistSalesCtx = document.getElementById('stockistSalesChart');
             if (stockistSalesCtx) {
                 const salesData = dummyStockistData.mySales;
@@ -1514,7 +1518,7 @@
             document.getElementById('stockist-stock-value').textContent = `$${totalStockValue.toFixed(2)}`;
         }
 
-        document.addEventListener('DOMContentLoaded', renderStockistCharts); // Render charts after all content is loaded
+        document.addEventListener('DOMContentLoaded', async () => { await fetchSalesData(); renderStockistCharts(); });
     </script>
 </body>
 </html>

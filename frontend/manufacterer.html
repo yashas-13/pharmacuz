@@ -1552,8 +1552,7 @@
             <span>Users</span>
         </a>
     </nav>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script>
         // Basic JS for sidebar navigation and modal placeholders
         document.addEventListener('DOMContentLoaded', function () {
@@ -1716,9 +1715,37 @@
             //     options: { responsive: true, maintainAspectRatio: false }
             // });
         }
+        async function loadAnalytics() {
+            const salesCtx = document.getElementById('salesChart');
+            const resp = await fetch('/api/analytics/order-stats', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = resp.ok ? await resp.json() : {};
+            if (salesCtx) {
+                new Chart(salesCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data),
+                        datasets: [{ label: 'Orders', data: Object.values(data), backgroundColor: '#3498db' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                });
+            }
+            const heatCtx = document.getElementById('lowStockHeatmap');
+            const resp2 = await fetch('/api/analytics/low-stock', { headers: { 'Authorization': `Bearer ${token}` } });
+            const d2 = resp2.ok ? await resp2.json() : [];
+            if (heatCtx && heatCtx.getContext) {
+                const ctx = heatCtx.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: d2.map(i => i.product_name),
+                        datasets: [{ label: 'Qty', data: d2.map(i => i.quantity), backgroundColor: 'rgba(231,76,60,0.7)' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                });
+            }
+        }
         renderCharts();
-
-        const token = localStorage.getItem('token');
+        loadAnalytics();
 
         async function loadProducts() {
             const resp = await fetch('/api/manufacturer/products', {
