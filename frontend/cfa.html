@@ -3,128 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CFA Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>CFA Dashboard - Pharma Distribution App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #007bff; /* Blue */
-            --secondary-color: #6c757d; /* Grey */
-            --background-color: #f8f9fa; /* Light grey */
-            --card-background: #ffffff; /* White */
-            --border-color: #e9ecef; /* Light border */
-            --text-color: #343a40; /* Dark text */
-            --success-color: #28a745; /* Green */
-            --warning-color: #ffc107; /* Yellow */
-            --danger-color: #dc3545; /* Red */
-            --info-color: #17a2b8; /* Cyan for info */
+        /* Core Principles for Mobile Dashboard CSS: */
+        /* 1. Mobile-First Approach */
+        /* 2. Flexbox & Grid for Layout */
+        /* 3. Relative Units */
+        /* 4. Minimalism & Clarity */
+        /* 5. Touch Targets */
+        /* 6. Performance */
+
+        /* --- 1. Global Styles & Resets (Foundation) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px; /* Define 1rem base */
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
             line-height: 1.6;
-            overflow-x: hidden;
+            color: #333;
+            background-color: #f0f2f5; /* Light gray background for the dashboard */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .dashboard-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* --- Header --- */
-        .header {
-            background-color: var(--card-background);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header h1 {
-            font-size: 1.2em;
-            margin: 0;
-            color: var(--primary-color);
-        }
-
-        .notification-bell {
-            font-size: 1.5em;
-            cursor: pointer;
-            position: relative;
-            color: var(--secondary-color);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--danger-color);
-            color: white;
-            font-size: 0.6em;
-            padding: 2px 6px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* --- Tabbed Interface --- */
-        .nav-tabs {
-            display: flex;
-            justify-content: space-around;
-            background-color: var(--card-background);
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 60px; /* Adjust based on header height */
-            z-index: 900;
-            padding: 0 10px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        .nav-tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .nav-tabs button {
-            flex-shrink: 0;
-            padding: 12px 15px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 0.9em;
-            color: var(--secondary-color);
-            transition: color 0.2s, border-bottom 0.2s;
-            white-space: nowrap;
-        }
-
-        .nav-tabs button.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
+        h1, h2, h3, h4, h5, h6 {
+            color: #1a202c;
+            margin-bottom: 0.8rem;
             font-weight: 600;
         }
 
-        /* --- Main Content Area --- */
-        .main-content {
+        h1 { font-size: 1.8rem; } /* Adjusted for mobile header */
+        h2 { font-size: 1.6rem; }
+        h3 { font-size: 1.3rem; }
+        /* ... (and so on for other headings) */
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #c9d0d9;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #f0f2f5;
+        }
+
+        /* --- 2. Layout Structure (Flexbox for Mobile) --- */
+
+        /* App Container - controls overall layout */
+        .app-container {
+            display: flex;
+            flex-direction: column; /* Stack header and main content vertically on mobile */
+            min-height: 100vh;
+            padding: 0; /* Remove padding from app-container, add to sections */
+        }
+
+        /* Header */
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 1rem; /* Adjust padding for mobile */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.3rem; /* Smaller for mobile */
+            margin: 0;
+        }
+
+        .user-info {
+            font-size: 0.8rem; /* Smaller font size */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .user-info strong, .user-info a {
+            color: white;
+        }
+        .user-info a {
+            text-decoration: underline;
+        }
+
+        /* Sidebar - Mobile Specific (Hidden by default, shown via JS for burger menu) */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px; /* Hidden off-screen */
+            width: 250px;
+            height: 100%;
+            background-color: #2c3e50;
+            color: white;
             padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            transition: left 0.3s ease-in-out;
+            z-index: 2000; /* Above everything else */
+            overflow-y: auto; /* Scrollable if many items */
+        }
+
+        .sidebar.open {
+            left: 0; /* Show sidebar */
+        }
+
+        .sidebar h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar ul li a {
+            display: flex; /* Use flex for icon and text alignment */
+            align-items: center;
+            color: white;
+            padding: 12px 15px; /* Larger touch target */
+            text-decoration: none;
+            border-radius: 8px; /* Slightly more rounded */
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .sidebar ul li a i { /* Icon styling for sidebar */
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar ul li a:hover, .sidebar ul li a.active {
+            background-color: #3498db;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Overlay for when sidebar is open */
+        .overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1999; /* Below sidebar, above content */
+        }
+        .overlay.active {
+            display: block;
+        }
+
+        /* Burger Menu Icon for Mobile */
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: block; /* Show on mobile */
+        }
+
+        /* Main Content Area */
+        .main-content {
             flex-grow: 1;
+            padding: 1rem; /* Overall padding for the main content */
         }
 
-        .tab-content {
+        .content-section {
             display: none;
-            animation: fadeIn 0.5s ease-in-out;
+            animation: fadeIn 0.5s ease-out; /* Simple fade-in effect */
         }
-
-        .tab-content.active {
+        .content-section.active {
             display: block;
         }
 
@@ -133,468 +223,1534 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Card Styles --- */
-        .card-grid {
+        /* --- 3. Dashboard Components (Cards & Elements) --- */
+
+        /* Dashboard Container for BI Dashboard specific cards */
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr; /* Single column for mobile BI dashboard */
+            gap: 1.2rem; /* Space between cards */
+            margin-top: 1.2rem;
         }
 
-        .card {
-            background-color: var(--card-background);
+        /* Dashboard Card - General Styling */
+        .dashboard-card, .card { /* Apply modern styling to both */
+            background-color: #ffffff;
             border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 1.2rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: transform 0.2s ease-in-out;
+            margin-bottom: 1.2rem; /* Ensure consistent spacing if not part of grid */
         }
 
-        .card h3 {
-            font-size: 1em;
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: var(--secondary-color);
+        .dashboard-card:hover, .card:hover {
+            transform: translateY(-3px);
         }
 
-        .card .value {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-
-        .card .sub-value {
-            font-size: 0.8em;
-            color: var(--secondary-color);
-        }
-
-        /* --- List Styles --- */
-        .list-section {
-            background-color: var(--card-background);
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .list-section h3 {
-            font-size: 1.1em;
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: var(--text-color);
-        }
-
-        .list-item {
-            display: flex;
+        .card-header {
+            font-size: 1.1rem; /* Adjusted for card headers */
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem; /* Reduced padding */
+            border-bottom: 1px solid #eee;
+            display: flex; /* For header actions if any */
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9em;
         }
-
-        .list-item:last-child {
-            border-bottom: none;
-        }
-
-        .list-item .status-chip {
-            padding: 4px 8px;
-            border-radius: 5px;
-            font-size: 0.8em;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        /* Color-coded status chips */
-        .status-chip.pending { background-color: #fff3cd; color: #856404; } /* Yellow */
-        .status-chip.approved { background-color: #d4edda; color: #155724; } /* Green */
-        .status-chip.packed { background-color: #cce5ff; color: #004085; } /* Light Blue */
-        .status-chip.shipped { background-color: #e2e3e5; color: #383d41; } /* Grey */
-        .status-chip.delivered { background-color: #d4edda; color: #155724; } /* Green */
-        .status-chip.error { background-color: #f8d7da; color: #721c24; } /* Red */
-        .status-chip.reorder { background-color: #f0f0f0; color: #6c757d; border: 1px dashed #6c757d; } /* Dashed Grey */
-
-        .list-item button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
+        .card-header .info-icon {
+            color: #888;
+            font-size: 1rem;
             cursor: pointer;
-            font-size: 0.85em;
-            transition: background-color 0.2s;
-        }
-        .list-item button:hover {
-            background-color: #0056b3;
+            margin-left: 0.5rem;
         }
 
-        /* --- Live Feed / History Item --- */
-        .feed-item {
+        /* Metric Card (e.g., total sales, new users) */
+        .metric-card .main-metric {
+            font-size: 2.2rem; /* Slightly smaller for mobile */
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-card .metric-change {
+            font-size: 0.9rem;
+            font-weight: 500;
             display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9em;
-        }
-        .feed-item:last-child {
-            border-bottom: none;
-        }
-        .feed-item .icon {
-            font-size: 1.2em;
-            color: var(--secondary-color);
-        }
-        .feed-item .details {
-            flex-grow: 1;
-        }
-        .feed-item .details p {
-            margin: 0;
-        }
-        .feed-item .details .timestamp {
-            font-size: 0.75em;
-            color: var(--secondary-color);
-            margin-top: 5px;
+            align-items: center;
         }
 
-        /* --- Floating Action Button (FAB) --- */
-        .fab {
-            position: fixed;
-            bottom: 80px; /* Above bottom nav */
-            right: 20px;
-            background-color: var(--primary-color);
-            color: white;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
+        .metric-card .metric-change.positive { color: #28a745; }
+        .metric-card .metric-change.negative { color: #dc3545; }
+        .metric-card .metric-change .icon { margin-right: 0.3rem; }
+        .metric-card .metric-description {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 0.3rem;
+        }
+
+        /* Chart Card (e.g., bar, line, pie charts) */
+        .chart-card .chart-container {
+            height: 200px; /* Fixed height for charts on mobile */
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.8em;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s;
-            z-index: 1001;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #aaa;
         }
-        .fab:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
+
+        /* List Card (e.g., top products, recent activities) */
+        .list-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .list-card li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        .list-card li:last-child {
+            border-bottom: none;
+        }
+
+        .list-card .item-name {
+            font-weight: 500;
+        }
+
+        .list-card .item-value {
+            color: #007bff;
+            font-weight: 600;
+        }
+
+        /* Alert/Notification Card */
+        .alert-card {
+            background-color: #fff3cd; /* Light yellow for warnings */
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            font-size: 0.9rem; /* Adjusted font size */
+        }
+
+        .alert-card.error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-card.success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-card .alert-icon {
+            font-size: 1.2rem;
+            margin-right: 0.8rem;
+        }
+
+        .alert-card p {
+            margin: 0;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            margin-bottom: 1.2rem;
+            padding: 1rem;
+            background-color: #ecf0f1;
+            border-radius: 8px; /* More rounded */
+            display: flex;
+            flex-direction: column; /* Stack filters vertically on mobile */
+            gap: 0.8rem; /* Space between filter elements */
+            align-items: stretch; /* Stretch items to fill width */
+        }
+        .filter-bar input,
+        .filter-bar select,
+        .filter-bar button {
+            width: 100%; /* Full width on mobile */
+            padding: 0.7rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            font-size: 0.9rem;
+            color: #333;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .filter-bar select {
+             background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.6-6.4H18.8c-5%200-9.3%203.3-11.7%208.7-2.4%205.4-1.6%2011.6%202.1%2016.3l126.8%20126.9c3%203%207%204.7%2011.3%204.7s8.3-1.7%2011.3-4.7l126.8-126.9c3.8-4.7%204.5-10.9%202.1-16.3z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.7em top 50%, 0 0;
+            background-size: 0.65em auto, 100%;
+        }
+        .filter-bar button {
+            margin-top: 0.5rem; /* Add some space if it's not a direct input/select */
+            margin-left: 0; /* Override previous margin */
+        }
+        .filter-bar .btn-sm { /* For specific small buttons within filter bar */
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto; /* Enable horizontal scrolling for tables */
+            margin-top: 1.2rem; /* Space below filter or header */
+            border-radius: 8px; /* Match card styling */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Subtle shadow */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem; /* Slightly smaller font for tables */
+            background-color: #ffffff;
+            min-width: 600px; /* Ensure table is wide enough for content, allowing scroll */
+        }
+
+        th, td {
+            border: 1px solid #eee; /* Lighter border */
+            padding: 10px 12px; /* Adjusted padding */
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f8f8; /* Lighter header background */
+            font-weight: 600;
+            color: #555;
+            position: sticky; /* Make headers sticky for horizontal scroll */
+            top: 0;
+            z-index: 1; /* Ensure headers are above scrolling content */
+        }
+        td {
+            vertical-align: top; /* Align content to top in cells */
+        }
+
+        tr:nth-child(even) {
+            background-color: #fbfbfb; /* Zebra striping */
+        }
+        tr:hover {
+            background-color: #f0f8ff; /* Hover effect */
+        }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap on multiple lines */
+            gap: 5px; /* Space between action buttons */
+        }
+        .action-buttons button, .action-buttons a {
+            flex-shrink: 0; /* Prevent buttons from shrinking */
+            margin-right: 0; /* Reset previous margin */
+            margin-bottom: 0; /* Reset previous margin */
         }
 
 
-        /* --- Common Dashboard Features --- */
+        /* --- 4. Navigation (Bottom Nav for Mobile) --- */
+
         .bottom-nav {
             display: flex;
             justify-content: space-around;
-            background-color: var(--card-background);
-            border-top: 1px solid var(--border-color);
-            padding: 10px 0;
+            align-items: center;
             position: sticky;
             bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.08); /* Stronger shadow */
+            padding: 0.5rem 0;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
             z-index: 1000;
+            margin-top: 1rem;
         }
+
         .bottom-nav-item {
-            text-align: center;
-            font-size: 0.75em;
-            color: var(--secondary-color);
-            text-decoration: none;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
-            padding: 5px;
+            text-decoration: none;
+            color: #777;
+            font-size: 0.7rem; /* Smaller font for text */
+            padding: 0.5rem;
+            flex: 1;
+            transition: color 0.3s ease, transform 0.2s ease;
         }
+
         .bottom-nav-item i {
-            font-size: 1.5em;
+            font-size: 1.5rem; /* Larger icon for visibility */
+            margin-bottom: 0.3rem;
         }
+
         .bottom-nav-item.active {
-            color: var(--primary-color);
+            color: #007bff;
+            transform: translateY(-2px); /* Subtle lift for active item */
+        }
+
+        .bottom-nav-item:hover {
+            color: #0056b3;
+        }
+
+        /* --- 5. Interactive Elements (Buttons, Inputs) --- */
+
+        /* Buttons */
+        .btn {
+            padding: 0.8rem 1.4rem; /* Larger touch target */
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.1s ease;
+            border: 1px solid transparent;
+            text-align: center; /* Ensure text is centered */
+            display: inline-flex; /* Use flex for icon alignment if needed */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i { /* Icon inside button */
+            margin-right: 0.5rem;
+        }
+
+        .btn:active {
+            transform: translateY(1px); /* Click feedback */
+        }
+
+        .btn-primary { background-color: #007bff; color: #ffffff; border-color: #007bff; }
+        .btn-primary:hover { background-color: #0056b3; border-color: #0056b3; }
+
+        .btn-secondary { background-color: #6c757d; color: #ffffff; border-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5a6268; border-color: #545b62; }
+
+        .btn-danger { background-color: #e74c3c; color: #ffffff; border-color: #e74c3c; }
+        .btn-danger:hover { background-color: #c0392b; border-color: #ae3225; }
+
+        .btn-success { background-color: #2ecc71; color: #ffffff; border-color: #2ecc71; }
+        .btn-success:hover { background-color: #27ae60; border-color: #23a059; }
+
+        .btn-outline {
+            background-color: transparent;
+            color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-outline:hover {
+            background-color: #e6f2ff;
+            color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .btn-sm {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+            font-weight: 600; /* Make labels bolder */
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group input[type="password"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%; /* Full width */
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            color: #333;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fff;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2500; /* Higher than sidebar */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6); /* Darker overlay */
+            padding: 1rem; /* Padding for small screens */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* Adjusted margin for mobile */
+            padding: 1.5rem; /* Adjusted padding */
+            border: 1px solid #888;
+            width: 95%; /* Wider on mobile */
+            max-width: 600px; /* Max width for larger screens */
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideInTop 0.3s ease-out; /* Simple slide-in effect */
+        }
+
+        .modal-header {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem; /* Adjusted for modal header */
+            color: #1a202c;
+        }
+        .close-btn {
+            color: #aaa;
+            font-size: 2rem; /* Larger for better touch */
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close-btn:hover, .close-btn:focus {
+            color: #333;
+            text-decoration: none;
+        }
+        .modal-footer {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: flex-end; /* Align buttons to the right */
+            gap: 0.8rem;
+        }
+        .modal-footer .btn {
+            margin-right: 0; /* Reset button margin */
+        }
+
+        @keyframes slideInTop {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* --- Media Queries for Larger Screens (Tablets & Desktops) --- */
+        @media (min-width: 768px) { /* Tablets and larger */
+            h1 { font-size: 2rem; } /* Back to desktop size */
+            .header {
+                padding: 15px 20px;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .user-info {
+                font-size: 0.9em;
+                flex-direction: row; /* Back to row layout */
+                align-items: center;
+            }
+            .user-info a {
+                margin-left: 10px; /* Space out logout link */
+            }
+
+            .menu-toggle {
+                display: none; /* Hide burger menu on larger screens */
+            }
+
+            .app-container {
+                flex-direction: row; /* Sidebar and main content side-by-side */
+            }
+
+            .sidebar {
+                position: relative; /* Not fixed */
+                left: 0; /* Always visible */
+                width: 250px;
+                box-shadow: none; /* No shadow needed */
+                transition: none; /* No transition needed */
+            }
+            .overlay {
+                display: none !important; /* Ensure overlay is hidden */
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr); /* Two columns for tablets */
+                gap: 1.5rem;
+            }
+            .filter-bar {
+                flex-direction: row; /* Row layout for filters */
+                align-items: center;
+                justify-content: flex-start;
+                flex-wrap: wrap; /* Allow filters to wrap */
+            }
+            .filter-bar input,
+            .filter-bar select {
+                width: auto; /* Allow filters to size based on content */
+                flex-grow: 1; /* Allow them to grow */
+            }
+            .filter-bar button {
+                width: auto;
+                margin-top: 0;
+            }
+            .filter-bar .btn-sm {
+                margin-left: auto; /* Push "Export" button to the right */
+            }
+
+            .modal-content {
+                margin: 10% auto; /* Centered margin for larger screens */
+                width: 60%; /* Wider on larger screens */
+            }
+        }
+
+        @media (min-width: 1024px) { /* Desktops */
+            .main-content {
+                padding: 2rem;
+            }
+            .dashboard-grid {
+                grid-template-columns: repeat(3, 1fr); /* Three columns for desktops */
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        @media (min-width: 1440px) { /* Large Desktops */
+            .dashboard-grid {
+                grid-template-columns: repeat(4, 1fr); /* Four columns for large desktops */
+            }
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="header">
-            <h1>CFA Dashboard</h1>
-            <div class="notification-bell">
-                <span class="bell-icon">🔔</span>
-                <span class="notification-badge">3</span>
-            </div>
-        </div>
-
-        <div class="nav-tabs">
-            <button class="tab-button active" data-tab="dispatch">Dispatch</button>
-            <button class="tab-button" data-tab="inventory">Inventory</button>
-            <button class="tab-button" data-tab="history">History</button>
-            <button class="tab-button" data-tab="notifications">Notifications</button>
-        </div>
-
-        <div class="main-content">
-            <div id="dispatch" class="tab-content active">
-                <h2>Today's Tasks</h2>
-                <div class="card-grid">
-                    <div class="card">
-                        <h3>Orders to Dispatch</h3>
-                        <div class="value">12</div>
-                        <div class="sub-value">Ready for pickup</div>
-                    </div>
-                    <div class="card">
-                        <h3>Items to Pack</h3>
-                        <div class="value">250</div>
-                        <div class="sub-value">Across 5 orders</div>
-                    </div>
-                    <div class="card">
-                        <h3>Updates Pending</h3>
-                        <div class="value">3</div>
-                        <div class="sub-value">Delivery confirmations</div>
-                    </div>
-                </div>
-
-                <div class="list-section">
-                    <h3>Dispatch Queue (Approved Orders)</h3>
-                    <div id="dispatchList"></div>
-                </div>
-
-                <div class="list-section">
-                    <h3>Live Status Feed</h3>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-box"></i></span>
-                        <div class="details">
-                            <p>Order <strong>#ORD1002</strong>: <span class="status-chip packed">Packed</span></p>
-                            <span class="timestamp">10:30 AM</span>
-                        </div>
-                    </div>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-truck"></i></span>
-                        <div class="details">
-                            <p>Order <strong>#ORD998</strong>: <span class="status-chip shipped">Shipped</span></p>
-                            <span class="timestamp">11:15 AM</span>
-                        </div>
-                    </div>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-check-circle"></i></span>
-                        <div class="details">
-                            <p>Order <strong>#ORD990</strong>: <span class="status-chip delivered">Delivered</span></p>
-                            <span class="timestamp">1:00 PM</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="inventory" class="tab-content">
-                <div class="list-section">
-                    <h3>Inventory Movement Tracker</h3>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-arrow-alt-circle-right"></i></span>
-                        <div class="details">
-                            <p>Product X: <strong>-50 units</strong> (Dispatch for ORD1001)</p>
-                            <span class="timestamp">10:45 AM</span>
-                        </div>
-                    </div>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-arrow-alt-circle-left"></i></span>
-                        <div class="details">
-                            <p>Product Y: <strong>+100 units</strong> (Received from Mfg.)</p>
-                            <span class="timestamp">09:00 AM</span>
-                        </div>
-                    </div>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-arrow-alt-circle-right"></i></span>
-                        <div class="details">
-                            <p>Product Z: <strong>-12 units</strong> (Dispatch for ORD998)</p>
-                            <span class="timestamp">Yesterday, 4:30 PM</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="list-section">
-                    <h3>Stock Refill Alerts</h3>
-                    <div class="list-item">
-                        <div>
-                            <strong>Product A</strong>
-                            <p>Current: 120 units | <span class="status-chip reorder">Reorder Suggestion</span></p>
-                        </div>
-                        <button>Details</button>
-                    </div>
-                    <div class="list-item">
-                        <div>
-                            <strong>Product C</strong>
-                            <p>Current: 50 units | <span class="status-chip reorder">Reorder Suggestion</span></p>
-                        </div>
-                        <button>Details</button>
-                    </div>
-                </div>
-                <div class="list-section">
-                    <h3>Goods Receipt Notes</h3>
-                    <ul id="grnList"></ul>
-                    <form id="grnForm" class="mt-2">
-                        <input type="text" id="grnBatch" placeholder="Batch" required>
-                        <input type="number" id="grnQty" placeholder="Qty" required>
-                        <button type="submit">Add</button>
-                    </form>
-                </div>
-            </div>
-
-            <div id="history" class="tab-content">
-                <h2>Order History (Dispatched Batches)</h2>
-                <div class="list-section">
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-                        <div class="details">
-                            <p><strong>Batch #B-MAY22-001</strong> (12 Orders)</p>
-                            <span class="timestamp">May 22, 2025</span>
-                        </div>
-                        <button>View</button>
-                    </div>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-                        <div class="details">
-                            <p><strong>Batch #B-MAY21-002</strong> (8 Orders)</p>
-                            <span class="timestamp">May 21, 2025</span>
-                        </div>
-                        <button>View</button>
-                    </div>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-                        <div class="details">
-                            <p><strong>Batch #B-MAY21-001</strong> (15 Orders)</p>
-                            <span class="timestamp">May 21, 2025</span>
-                        </div>
-                        <button>View</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="notifications" class="tab-content">
-                <h2>Notifications Panel</h2>
-                <div class="list-section">
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-check-circle"></i></span>
-                        <div class="details">
-                            <p>New Approved Order: <strong>#ORD1005</strong> ready for dispatch.</p>
-                            <span class="timestamp">Just now</span>
-                        </div>
-                    </div>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-                        <div class="details">
-                            <p>Packing Error: <strong>Order #999</strong> - Item mismatch detected.</p>
-                            <span class="timestamp">1 hour ago</span>
-                        </div>
-                    </div>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-truck-loading"></i></span>
-                        <div class="details">
-                            <p>Delivery Issue: <strong>Order #990</strong> - Customer unavailable.</p>
-                            <span class="timestamp">3 hours ago</span>
-                        </div>
-                    </div>
-                    <div class="feed-item">
-                        <span class="icon"><i class="fas fa-boxes"></i></span>
-                        <div class="details">
-                            <p>Inventory Alert: Product A stock below safety level.</p>
-                            <span class="timestamp">Yesterday</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="fab" onclick="alert('QR Code Scanner Activated!');">
-            <i class="fas fa-qrcode"></i>
-        </div>
-
-        <div class="bottom-nav">
-            <a href="#" class="bottom-nav-item active">
-                <i class="fas fa-home"></i> Dashboard
-            </a>
-            <a href="#" class="bottom-nav-item">
-                <i class="fas fa-user-circle"></i> Profile
-            </a>
-            <a href="#" class="bottom-nav-item">
-                <i class="fas fa-question-circle"></i> Help
-            </a>
-            <a href="#" class="bottom-nav-item">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+    <div class="header">
+        <button class="menu-toggle" aria-label="Open navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1>Pharma Distribution - CFA Admin</h1>
+        <div class="user-info">
+            Logged in as: <strong>CFAManager</strong>
+            <a href="#logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </div>
 
+    <div class="overlay"></div>
+    <div class="app-container">
+        <aside class="sidebar">
+            <h2>CFA Menu</h2>
+            <ul>
+                <li><a href="#dashboard" class="nav-link active" data-section="dashboard-section"><i class="fas fa-chart-line"></i> BI Dashboard</a></li>
+                <li><a href="#product-master" class="nav-link" data-section="product-master-section"><i class="fas fa-pills"></i> Product Master (View)</a></li>
+                <li><a href="#batch-master" class="nav-link" data-section="batch-master-section"><i class="fas fa-boxes"></i> Batch Master (View)</a></li>
+                <li><a href="#pack-configs" class="nav-link" data-section="pack-configs-section"><i class="fas fa-box-open"></i> Pack Configs (View)</a></li>
+                <li><a href="#pricing-catalogs" class="nav-link" data-section="pricing-catalogs-section"><i class="fas fa-tags"></i> Pricing Catalogs (View)</a></li>
+                <li><a href="#incoming-orders" class="nav-link" data-section="incoming-orders-section"><i class="fas fa-truck-loading"></i> Incoming Orders (SS)</a></li>
+                <li><a href="#outgoing-orders" class="nav-link" data-section="outgoing-orders-section"><i class="fas fa-shipping-fast"></i> Outgoing Orders (Mfr)</a></li>
+                <li><a href="#stock-management" class="nav-link" data-section="stock-management-section"><i class="fas fa-warehouse"></i> My Stock Management</a></li>
+                <li><a href="#stockist-visibility" class="nav-link" data-section="stockist-visibility-section"><i class="fas fa-eye"></i> Downstream Stock Visibility</a></li>
+                <li><a href="#audit-trail" class="nav-link" data-section="audit-trail-section"><i class="fas fa-clipboard-list"></i> Audit & Compliance</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <section id="dashboard-section" class="content-section active">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>CFA Business Intelligence Dashboard</h3>
+                        <span class="info-icon" title="Real-time BI insights for CFA operations."><i class="fas fa-info-circle"></i></span>
+                    </div>
+                    <p><em>(This dashboard provides insights relevant to your CFA operations: incoming orders, outgoing dispatches, and current inventory.)</em></p>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card metric-card">
+                            <div class="card-header">
+                                <h3>Pending SS Orders</h3>
+                                <span class="info-icon" title="Number of orders from Super Stockists awaiting approval/dispatch."><i class="fas fa-info-circle"></i></span>
+                            </div>
+                            <div class="card-content">
+                                <p class="main-metric" id="pending-ss-orders-count">...</p>
+                                <div class="metric-description">Orders to approve/dispatch.</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-card metric-card">
+                            <div class="card-header">
+                                <h3>My Current Stock Value</h3>
+                                <span class="info-icon" title="Estimated value of inventory currently at your CFA location."><i class="fas fa-info-circle"></i></span>
+                            </div>
+                            <div class="card-content">
+                                <p class="main-metric" id="cfa-stock-value">...</p>
+                                <div class="metric-description">Based on available inventory.</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-card alert-card warning">
+                            <span class="alert-icon"><i class="fas fa-exclamation-triangle"></i></span>
+                            <p><strong>Alert:</strong> Low stock for **Product Y** (Batch B123) - only 50 units left. Consider ordering from Manufacturer.</p>
+                        </div>
+                        <div class="dashboard-card chart-card">
+                            <div class="card-header">
+                                <h3>Recent Incoming Orders Volume</h3>
+                                <span class="info-icon" title="Volume of orders received from Super Stockists over time."><i class="fas fa-info-circle"></i></span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="incomingOrdersChart"></canvas>
+                                <p class="sr-only">Incoming orders chart placeholder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="product-master-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Product Master (View Only)</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>HSN</th>
+                                    <th>GST%</th>
+                                    <th>Composition</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cfaProductTableBody">
+                                <!-- Dynamic rows inserted via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="batch-master-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Batch Master (View Only)</h3>
+                    </div>
+                     <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Batch No</th>
+                                    <th>Product ID</th>
+                                    <th>Mfg Date</th>
+                                    <th>Exp Date</th>
+                                    <th>MRP</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cfaBatchTableBody">
+                                <tr>
+                                    <td>B001XYZ</td>
+                                    <td>PROD001</td>
+                                    <td>2024-01-15</td>
+                                    <td>2026-01-14</td>
+                                    <td>50.00</td>
+                                    <td>10000</td>
+                                </tr>
+                                <tr>
+                                    <td>B002ABC</td>
+                                    <td>PROD002</td>
+                                    <td>2024-03-01</td>
+                                    <td>2026-03-01</td>
+                                    <td>80.00</td>
+                                    <td>5000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pack-configs-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Pack Configurations (View Only)</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Config ID</th>
+                                    <th>Product ID</th>
+                                    <th>Pack Type</th>
+                                    <th>Units per Pack</th>
+                                    <th>Dimensions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cfaPackConfigTableBody">
+                                <tr>
+                                    <td>PC001</td>
+                                    <td>PROD001</td>
+                                    <td>Strip</td>
+                                    <td>10 Tablets</td>
+                                    <td>10cm x 3cm x 0.5cm</td>
+                                </tr>
+                                <tr>
+                                    <td>PC002</td>
+                                    <td>PROD002</td>
+                                    <td>Bottle</td>
+                                    <td>60ml</td>
+                                    <td>5cm x 5cm x 10cm</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pricing-catalogs-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Pricing Catalogs (View Only)</h3>
+                    </div>
+                    <div class="filter-bar">
+                        <label for="pricingStateRegionCFA" class="sr-only">Select State/Region:</label>
+                        <select id="pricingStateRegionCFA">
+                            <option value="all">All India</option>
+                            <option value="MH">Maharashtra</option>
+                            <option value="KA">Karnataka</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>State/Region</th>
+                                    <th>Price (PTR)</th>
+                                    <th>Price (PTS)</th>
+                                    <th>Effective Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cfaPricingTableBody">
+                                <tr>
+                                    <td>PROD001</td>
+                                    <td>Paracetamol 500mg</td>
+                                    <td>Maharashtra</td>
+                                    <td>35.00</td>
+                                    <td>40.00</td>
+                                    <td>2024-04-01</td>
+                                </tr>
+                                <tr>
+                                    <td>PROD002</td>
+                                    <td>Amoxicillin 250mg</td>
+                                    <td>Karnataka</td>
+                                    <td>70.00</td>
+                                    <td>75.00</td>
+                                    <td>2024-05-01</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="incoming-orders-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Incoming Orders (from Super Stockists)</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>From Stockist</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Order Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incomingOrdersTableBody">
+                                <!-- Dynamic rows inserted via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="outgoing-orders-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Outgoing Orders (to Manufacturer)</h3>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('placeMfrOrderModal')"><i class="fas fa-plus"></i> Place New Order to Manufacturer</button>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>To Manufacturer</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Order Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="outgoingOrdersTableBody">
+                                <!-- Dynamic rows inserted via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="stock-management-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>My Stock Management (CFA Location)</h3>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('cfaAddStockModal')"><i class="fas fa-plus-circle"></i> Receive Stock from Manufacturer</button>
+                    <button class="btn btn-secondary" onclick="openModal('cfaDispatchStockModal')"><i class="fas fa-truck"></i> Dispatch Stock to Stockist</button>
+                    <div class="filter-bar">
+                        <input type="text" placeholder="Search Product/Batch..." aria-label="Search product or batch">
+                        <select aria-label="Filter by Product Category">
+                            <option>Filter by Category</option>
+                            <option>Analgesic</option>
+                            <option>Antibiotic</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-filter"></i> Apply Filters</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Batch No</th>
+                                    <th>Quantity</th>
+                                    <th>Expiry Date</th>
+                                    <th>Last Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cfaMyStockTableBody">
+                                <!-- Dynamic rows inserted via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="stockist-visibility-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Downstream Super Stockist Stock Visibility</h3>
+                    </div>
+                     <div class="filter-bar">
+                        <input type="text" placeholder="Search Product/Batch..." aria-label="Search product or batch">
+                        <select aria-label="Filter by Super Stockist">
+                            <option>Filter by Super Stockist</option>
+                            <option>SS001 - Delhi</option>
+                            <option>SS002 - Chennai</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-filter"></i> Apply Filters</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Super Stockist</th>
+                                    <th>Product Name</th>
+                                    <th>Batch No</th>
+                                    <th>Quantity</th>
+                                    <th>Expiry Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="downstreamStockTableBody">
+                                <tr>
+                                    <td>SS001 - Delhi</td>
+                                    <td>Paracetamol 500mg</td>
+                                    <td>B001XYZ</td>
+                                    <td>500</td>
+                                    <td>2026-01-14</td>
+                                    <td style="color:#28a745; font-weight: 500;">Healthy</td>
+                                </tr>
+                                 <tr>
+                                    <td>SS002 - Chennai</td>
+                                    <td>Amoxicillin 250mg</td>
+                                    <td>B003ABC</td>
+                                    <td>50</td>
+                                    <td>2025-07-30</td>
+                                    <td style="color:#ffc107; font-weight: 500;">Low Stock</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="audit-trail-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Audit Trail & Compliance (My Actions)</h3>
+                    </div>
+                    <div class="filter-bar">
+                        <label for="auditStartDateCFA" class="sr-only">Start Date:</label>
+                        <input type="date" id="auditStartDateCFA" aria-label="Audit start date">
+                        <label for="auditEndDateCFA" class="sr-only">End Date:</label>
+                        <input type="date" id="auditEndDateCFA" aria-label="Audit end date">
+                        <select id="auditActionFilterCFA" aria-label="Filter by Action Type">
+                            <option value="">Filter by Action Type</option>
+                            <option value="Order Approval">Order Approval</option>
+                            <option value="Stock Receive">Stock Receive</option>
+                            <option value="Stock Dispatch">Stock Dispatch</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Filter Logs</button>
+                        <button class="btn btn-secondary btn-sm"><i class="fas fa-file-export"></i> Export Report</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Entity ID</th>
+                                    <th>Details</th>
+                                    <th>IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cfaAuditLogTableBody">
+                                <tr>
+                                    <td>2025-05-24 10:00:00</td>
+                                    <td>CFAManager</td>
+                                    <td>Order Approved</td>
+                                    <td>Order</td>
+                                    <td>ORD105</td>
+                                    <td>Approved order from SS001 for Paracetamol</td>
+                                    <td>10.0.0.15</td>
+                                </tr>
+                                <tr>
+                                    <td>2025-05-23 15:30:00</td>
+                                    <td>CFAManager</td>
+                                    <td>Stock Received</td>
+                                    <td>Batch</td>
+                                    <td>B001XYZ</td>
+                                    <td>Received 5000 units from Manufacturer</td>
+                                    <td>10.0.0.15</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modals for CFA Specific actions -->
+
+    <div id="placeMfrOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Place Order to Manufacturer</h3><span class="close-btn" onclick="closeModal('placeMfrOrderModal')">&times;</span></div>
+            <form id="mfrOrderForm">
+                <div class="form-group">
+                    <label for="mfrOrderProductId">Product:</label>
+                    <select id="mfrOrderProductId" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="mfrOrderQuantity">Quantity:</label>
+                    <input type="number" id="mfrOrderQuantity" min="1" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('placeMfrOrderModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Place Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="cfaAddStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Receive Stock from Manufacturer</h3><span class="close-btn" onclick="closeModal('cfaAddStockModal')">&times;</span></div>
+            <form id="receiveStockForm">
+                <div class="form-group">
+                    <label for="receiveProductId">Product:</label>
+                    <select id="receiveProductId" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="receiveBatchNo">Batch No:</label>
+                    <input type="text" id="receiveBatchNo" required>
+                </div>
+                <div class="form-group">
+                    <label for="receiveQuantity">Quantity:</label>
+                    <input type="number" id="receiveQuantity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="receiveExpDate">Expiry Date:</label>
+                    <input type="date" id="receiveExpDate">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('cfaAddStockModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Receive Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="cfaDispatchStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Dispatch Stock to Stockist</h3><span class="close-btn" onclick="closeModal('cfaDispatchStockModal')">&times;</span></div>
+            <form id="dispatchStockForm">
+                <div class="form-group">
+                    <label for="dispatchProductId">Product:</label>
+                    <select id="dispatchProductId" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="dispatchBatchNo">Batch No:</label>
+                    <input type="text" id="dispatchBatchNo" required>
+                </div>
+                <div class="form-group">
+                    <label for="dispatchQuantity">Quantity:</label>
+                    <input type="number" id="dispatchQuantity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="dispatchToStockistId">Dispatch To Super Stockist:</label>
+                    <select id="dispatchToStockistId" required>
+                        <option value="SS001">SS001 - Delhi</option>
+                        <option value="SS002">SS002 - Chennai</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('cfaDispatchStockModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Dispatch Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <nav class="bottom-nav">
+        <a href="#dashboard" class="bottom-nav-item active" data-section="dashboard-section">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="#incoming-orders" class="bottom-nav-item" data-section="incoming-orders-section">
+            <i class="fas fa-truck-loading"></i>
+            <span>Incoming</span>
+        </a>
+        <a href="#outgoing-orders" class="bottom-nav-item" data-section="outgoing-orders-section">
+            <i class="fas fa-shipping-fast"></i>
+            <span>Outgoing</span>
+        </a>
+        <a href="#stock-management" class="bottom-nav-item" data-section="stock-management-section">
+            <i class="fas fa-warehouse"></i>
+            <span>My Stock</span>
+        </a>
+        <a href="#stockist-visibility" class="bottom-nav-item" data-section="stockist-visibility-section">
+            <i class="fas fa-eye"></i>
+            <span>Stockists</span>
+        </a>
+        <a href="#audit-trail" class="bottom-nav-item" data-section="audit-trail-section">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Audit</span>
+        </a>
+    </nav>
+
+
     <script>
-        // --- Tab Switching Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
+        // Basic JS for sidebar navigation and modal placeholders
+        document.addEventListener('DOMContentLoaded', function () {
             const token = localStorage.getItem('token');
             const role = localStorage.getItem('role');
-            if (!token || role !== 'cfa') {
-                window.location.href = 'index.html';
-                return;
+            // Simulate CFA role for this page
+            localStorage.setItem('role', 'cfa'); 
+            const userRole = localStorage.getItem('role');
+
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
+            const contentSections = document.querySelectorAll('.main-content .content-section');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.overlay');
+
+            function activateSection(targetSectionId) {
+                contentSections.forEach(section => {
+                    if (section.id === targetSectionId) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
             }
 
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
+            function setActiveNavLink(dataSection) {
+                 navLinks.forEach(nav => {
+                    if (nav.getAttribute('data-section') === dataSection) {
+                        nav.classList.add('active');
+                    } else {
+                        nav.classList.remove('active');
+                    }
+                });
+                bottomNavItems.forEach(nav => {
+                    if (nav.getAttribute('data-section') === dataSection) {
+                        nav.classList.add('active');
+                    } else {
+                        nav.classList.remove('active');
+                    }
+                });
+            }
 
-            tabButtons.forEach(button => {
-                button.addEventListener('click', (event) => {
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    const targetTab = event.target.dataset.tab;
-                    event.target.classList.add('active');
-                    document.getElementById(targetTab).classList.add('active');
+            // Handle sidebar navigation clicks
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetSectionId = this.getAttribute('data-section');
+                    setActiveNavLink(targetSectionId);
+                    activateSection(targetSectionId);
+                    closeSidebar(); // Close sidebar after selection
                 });
             });
 
-            const token = localStorage.getItem('token');
-
-            async function loadGrns() {
-                const resp = await fetch('/api/cfa/grn', { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await resp.json();
-                const list = document.getElementById('grnList');
-                list.innerHTML = '';
-                data.forEach(g => {
-                    const li = document.createElement('li');
-                    li.textContent = `${g.batch} - ${g.quantity}`;
-                    list.appendChild(li);
+            // Handle bottom navigation clicks
+            bottomNavItems.forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetSectionId = this.getAttribute('data-section');
+                    setActiveNavLink(targetSectionId);
+                    activateSection(targetSectionId);
                 });
+            });
+
+            // Toggle sidebar for mobile
+            menuToggle.addEventListener('click', function() {
+                toggleSidebar();
+            });
+
+            overlay.addEventListener('click', function() {
+                closeSidebar();
+            });
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
             }
 
-            async function loadDispatchQueue() {
-                const resp = await fetch('/api/orders?status=approved', { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await resp.json();
-                const list = document.getElementById('dispatchList');
-                list.innerHTML = '';
-                data.forEach(o => {
-                    const div = document.createElement('div');
-                    div.className = 'list-item';
-                    div.innerHTML = `<div><strong>#${o.id}</strong> - ${o.product}<p>${o.quantity} units | <span class="status-chip approved">Approved</span></p></div>`;
-                    const btn = document.createElement('button');
-                    btn.textContent = 'Dispatch';
-                    btn.addEventListener('click', async () => {
-                        await fetch(`/api/orders/${o.id}/dispatch`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
-                        await loadDispatchQueue();
-                    });
-                    div.appendChild(btn);
-                    list.appendChild(div);
-                });
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
             }
 
-            document.getElementById('grnForm').addEventListener('submit', async e => {
+            // Initial section activation
+            const initialSectionData = localStorage.getItem('cfaLastActiveSection') || 'dashboard-section';
+            setActiveNavLink(initialSectionData);
+            activateSection(initialSectionData);
+
+            // Store last active section in local storage (for persistence)
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    localStorage.setItem('cfaLastActiveSection', this.getAttribute('data-section'));
+                });
+            });
+            bottomNavItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    localStorage.setItem('cfaLastActiveSection', this.getAttribute('data-section'));
+                });
+            });
+
+            // Logout functionality
+            document.getElementById('logout-btn').addEventListener('click', function(e) {
                 e.preventDefault();
-                const payload = { batch: document.getElementById('grnBatch').value, quantity: document.getElementById('grnQty').value };
-                const resp = await fetch('/api/cfa/grn', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(payload)
-                });
-                if (resp.ok) {
-                    document.getElementById('grnBatch').value = '';
-                    document.getElementById('grnQty').value = '';
-                    await loadGrns();
+                localStorage.removeItem('token');
+                localStorage.removeItem('role');
+                localStorage.removeItem('cfaLastActiveSection'); // Clear CFA specific state
+                window.location.href = 'index.html'; // Redirect to login/home page
+            });
+        });
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
+            // Populate dropdowns specific to modals if needed
+            if (modalId === 'placeMfrOrderModal' || modalId === 'cfaAddStockModal' || modalId === 'cfaDispatchStockModal') {
+                populateProductDropdownsCFA();
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal if user clicks outside of it
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
                 }
             });
+        }
 
-            loadGrns();
-            loadDispatchQueue();
+        // Mock API Calls and Data Loading for CFA Dashboard
+        const dummyCFAData = {
+            products: [
+                { id: 'PROD001', name: 'Paracetamol 500mg', description: 'Pain relief', hsn: '30049099', gst: 12, composition: 'Paracetamol', category: 'Analgesic' },
+                { id: 'PROD002', name: 'Amoxicillin 250mg', description: 'Antibiotic', hsn: '30041010', gst: 12, composition: 'Amoxicillin', category: 'Antibiotic' },
+                { id: 'PROD003', name: 'Antacid Liquid', description: 'Acidity relief', hsn: '30045090', gst: 5, composition: 'Aluminium Hydroxide', category: 'Antacid' }
+            ],
+            batches: [
+                { id: 'B001XYZ', product_id: 'PROD001', mfg_date: '2024-01-15', exp_date: '2026-01-14', mrp: 50.00, quantity: 10000 },
+                { id: 'B002ABC', product_id: 'PROD002', mfg_date: '2024-03-01', exp_date: '2026-03-01', mrp: 80.00, quantity: 5000 }
+            ],
+            packConfigs: [
+                { id: 'PC001', product_id: 'PROD001', pack_type: 'Strip', units_per_pack: '10 Tablets', dimensions: '10cm x 3cm' },
+                { id: 'PC002', product_id: 'PROD002', pack_type: 'Bottle', units_per_pack: '60ml', dimensions: '5cm x 5cm' }
+            ],
+            pricing: [
+                { product_id: 'PROD001', product_name: 'Paracetamol 500mg', state_region: 'Maharashtra', ptr: 35.00, pts: 40.00, effective_date: '2024-04-01' },
+                { product_id: 'PROD002', product_name: 'Amoxicillin 250mg', state_region: 'Karnataka', ptr: 70.00, pts: 75.00, effective_date: '2024-05-01' }
+            ],
+            incomingOrders: [
+                { id: 'ORD101', from_stockist: 'SS001 - Delhi', product_id: 'PROD001', product_name: 'Paracetamol 500mg', quantity: 200, order_date: '2025-06-19', status: 'Pending Approval' },
+                { id: 'ORD102', from_stockist: 'SS002 - Chennai', product_id: 'PROD003', product_name: 'Antacid Liquid', quantity: 50, order_date: '2025-06-18', status: 'Approved - Pending Dispatch' }
+            ],
+            outgoingOrders: [
+                { id: 'ORD201', to_manufacturer: 'Global Pharma Inc.', product_id: 'PROD001', product_name: 'Paracetamol 500mg', quantity: 1000, order_date: '2025-06-15', status: 'Shipped' },
+                { id: 'ORD202', to_manufacturer: 'Global Pharma Inc.', product_id: 'PROD002', product_name: 'Amoxicillin 250mg', quantity: 500, order_date: '2025-06-10', status: 'Delivered' }
+            ],
+            cfaMyStock: [
+                { product_id: 'PROD001', product_name: 'Paracetamol 500mg', batch_no: 'B001XYZ', quantity: 5000, exp_date: '2026-01-14', last_updated: '2025-06-20' },
+                { product_id: 'PROD002', product_name: 'Amoxicillin 250mg', batch_no: 'B002ABC', quantity: 2000, exp_date: '2026-03-01', last_updated: '2025-06-20' },
+                { product_id: 'PROD003', product_name: 'Antacid Liquid', batch_no: 'B003LMN', quantity: 300, exp_date: '2025-10-01', last_updated: '2025-06-20' }
+            ],
+            auditLogs: [
+                { timestamp: '2025-06-20 11:30:00', user: 'CFAManager', action: 'Stock Received', entity: 'Batch', entity_id: 'B001XYZ', details: 'Received 5000 units from Manufacturer', ip_address: '10.0.0.15' },
+                { timestamp: '2025-06-19 14:00:00', user: 'CFAManager', action: 'Order Approved', entity: 'Order', entity_id: 'ORD101', details: 'Approved order from SS001', ip_address: '10.0.0.15' }
+            ]
+        };
+
+        // Populate dropdowns with products
+        function populateProductDropdownsCFA() {
+            const productSelects = ['mfrOrderProductId', 'receiveProductId', 'dispatchProductId'];
+            productSelects.forEach(selectId => {
+                const selectElement = document.getElementById(selectId);
+                if (selectElement) {
+                    selectElement.innerHTML = '';
+                    dummyCFAData.products.forEach(p => {
+                        const option = document.createElement('option');
+                        option.value = p.id;
+                        option.textContent = p.name;
+                        selectElement.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // Load Products (View Only for CFA)
+        function loadCFAProducts() {
+            const body = document.getElementById('cfaProductTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            dummyCFAData.products.forEach(p => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>${p.description || ''}</td>
+                    <td>${p.hsn || ''}</td>
+                    <td>${p.gst || ''}</td>
+                    <td>${p.composition || ''}</td>
+                    <td>${p.category || ''}</td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // Load Batches (View Only for CFA)
+        function loadCFABatches() {
+            const body = document.getElementById('cfaBatchTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            dummyCFAData.batches.forEach(b => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${b.id}</td>
+                    <td>${b.product_id}</td>
+                    <td>${b.mfg_date || ''}</td>
+                    <td>${b.exp_date || ''}</td>
+                    <td>${b.mrp.toFixed(2) || ''}</td>
+                    <td>${b.quantity || ''}</td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // Load Pack Configs (View Only for CFA)
+        function loadCFAPackConfigs() {
+            const body = document.getElementById('cfaPackConfigTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            dummyCFAData.packConfigs.forEach(c => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${c.id}</td>
+                    <td>${c.product_id}</td>
+                    <td>${c.pack_type}</td>
+                    <td>${c.units_per_pack || ''}</td>
+                    <td>${c.dimensions || ''}</td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // Load Pricing (View Only for CFA)
+        function loadCFAPricing() {
+            const body = document.getElementById('cfaPricingTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            dummyCFAData.pricing.forEach(p => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${p.product_id}</td>
+                    <td>${p.product_name}</td>
+                    <td>${p.state_region}</td>
+                    <td>${p.ptr.toFixed(2)}</td>
+                    <td>${p.pts.toFixed(2)}</td>
+                    <td>${p.effective_date}</td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // Load Incoming Orders (SS to CFA)
+        function loadIncomingOrders() {
+            const body = document.getElementById('incomingOrdersTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            dummyCFAData.incomingOrders.forEach(o => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${o.id}</td>
+                    <td>${o.from_stockist}</td>
+                    <td>${o.product_name}</td>
+                    <td>${o.quantity}</td>
+                    <td>${o.order_date}</td>
+                    <td>${o.status}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-success btn-sm approve-order-btn" data-order-id="${o.id}"><i class="fas fa-check"></i> Approve</button>
+                        <button class="btn btn-danger btn-sm reject-order-btn" data-order-id="${o.id}"><i class="fas fa-times"></i> Reject</button>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+            document.querySelectorAll('.approve-order-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.dataset.orderId;
+                    alert(`Order ${orderId} Approved! (Simulated)`);
+                    // In a real app: send API call to update order status
+                    this.closest('tr').remove(); // Remove from pending list
+                });
+            });
+            document.querySelectorAll('.reject-order-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.dataset.orderId;
+                    alert(`Order ${orderId} Rejected! (Simulated)`);
+                    // In a real app: send API call to update order status
+                    this.closest('tr').remove(); // Remove from pending list
+                });
+            });
+        }
+
+        // Load Outgoing Orders (CFA to Mfr)
+        function loadOutgoingOrders() {
+            const body = document.getElementById('outgoingOrdersTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            dummyCFAData.outgoingOrders.forEach(o => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${o.id}</td>
+                    <td>${o.to_manufacturer}</td>
+                    <td>${o.product_name}</td>
+                    <td>${o.quantity}</td>
+                    <td>${o.order_date}</td>
+                    <td>${o.status}</td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // Load CFA's Own Stock
+        function loadCFAMyStock() {
+            const body = document.getElementById('cfaMyStockTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            dummyCFAData.cfaMyStock.forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.product_name}</td>
+                    <td>${s.batch_no}</td>
+                    <td>${s.quantity}</td>
+                    <td>${s.exp_date || ''}</td>
+                    <td>${s.last_updated || ''}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Adjust</button>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // Load Downstream Stockist Visibility (CFA can see SS stock)
+        function loadDownstreamStockVisibility() {
+            // This would fetch from a combined inventory view or iterate through SS entities
+            // For now, using hardcoded dummy data for demonstration
+            const body = document.getElementById('downstreamStockTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            const dummyDownstreamStock = [
+                { stockist: 'SS001 - Delhi', product_name: 'Paracetamol 500mg', batch_no: 'B001XYZ', quantity: 500, exp_date: '2026-01-14', status: 'Healthy' },
+                { stockist: 'SS002 - Chennai', product_name: 'Amoxicillin 250mg', batch_no: 'B003ABC', quantity: 50, exp_date: '2025-07-30', status: 'Low Stock' },
+                { stockist: 'SS001 - Delhi', product_name: 'Antacid Liquid', batch_no: 'B004JKL', quantity: 120, exp_date: '2025-11-15', status: 'Healthy' }
+            ];
+            dummyDownstreamStock.forEach(s => {
+                const row = document.createElement('tr');
+                let statusColor = 'inherit';
+                if (s.status === 'Low Stock') statusColor = '#ffc107';
+                row.innerHTML = `
+                    <td>${s.stockist}</td>
+                    <td>${s.product_name}</td>
+                    <td>${s.batch_no}</td>
+                    <td>${s.quantity}</td>
+                    <td>${s.exp_date || ''}</td>
+                    <td style="color:${statusColor}; font-weight: 500;">${s.status}</td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // Load Audit Logs for CFA
+        function loadCFAAuditLogs() {
+            const body = document.getElementById('cfaAuditLogTableBody');
+            if (!body) return;
+            body.innerHTML = '';
+            dummyCFAData.auditLogs.forEach(log => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${log.timestamp}</td>
+                    <td>${log.user}</td>
+                    <td>${log.action}</td>
+                    <td>${log.entity}</td>
+                    <td>${log.entity_id}</td>
+                    <td>${log.details}</td>
+                    <td>${log.ip_address}</td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // Form submissions (simulated)
+        document.getElementById('mfrOrderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const productId = document.getElementById('mfrOrderProductId').value;
+            const quantity = document.getElementById('mfrOrderQuantity').value;
+            alert(`Order placed to Manufacturer: Product ${productId}, Quantity ${quantity} (Simulated)`);
+            closeModal('placeMfrOrderModal');
+            // In real app: add this to outgoingOrders and refresh
         });
+
+        document.getElementById('receiveStockForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const productId = document.getElementById('receiveProductId').value;
+            const batchNo = document.getElementById('receiveBatchNo').value;
+            const quantity = document.getElementById('receiveQuantity').value;
+            alert(`Received Stock: Product ${productId}, Batch ${batchNo}, Quantity ${quantity} (Simulated)`);
+            closeModal('cfaAddStockModal');
+            // In real app: update cfaMyStock and refresh
+        });
+
+        document.getElementById('dispatchStockForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const productId = document.getElementById('dispatchProductId').value;
+            const batchNo = document.getElementById('dispatchBatchNo').value;
+            const quantity = document.getElementById('dispatchQuantity').value;
+            const stockistId = document.getElementById('dispatchToStockistId').value;
+            alert(`Dispatched Stock: Product ${productId}, Batch ${batchNo}, Quantity ${quantity} to ${stockistId} (Simulated)`);
+            closeModal('cfaDispatchStockModal');
+            // In real app: update cfaMyStock and SS stock, refresh
+        });
+
+        // Initialize data loads on page load
+        loadCFAProducts();
+        loadCFABatches();
+        loadCFAPackConfigs();
+        loadCFAPricing();
+        loadIncomingOrders();
+        loadOutgoingOrders();
+        loadCFAMyStock();
+        loadDownstreamStockVisibility();
+        loadCFAAuditLogs();
+        populateProductDropdownsCFA(); // For modals
+
+        // Placeholder for chart rendering on CFA dashboard
+        function renderCFACharts() {
+            // Simulate data for dashboard charts
+            const incomingOrdersCtx = document.getElementById('incomingOrdersChart');
+            if (incomingOrdersCtx) {
+                const incomingOrdersData = {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Incoming Orders Volume',
+                        data: [15, 20, 10, 25],
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                };
+                new Chart(incomingOrdersCtx, {
+                    type: 'bar',
+                    data: incomingOrdersData,
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+                });
+            }
+
+            // Update dummy metrics
+            document.getElementById('pending-ss-orders-count').textContent = dummyCFAData.incomingOrders.filter(o => o.status === 'Pending Approval').length;
+            const totalStockValue = dummyCFAData.cfaMyStock.reduce((sum, item) => {
+                const product = dummyCFAData.products.find(p => p.id === item.product_id);
+                return sum + (product ? product.price * item.quantity : 0);
+            }, 0);
+            document.getElementById('cfa-stock-value').textContent = `$${totalStockValue.toFixed(2)}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCFACharts); // Render charts after all content is loaded
     </script>
 </body>
 </html>
