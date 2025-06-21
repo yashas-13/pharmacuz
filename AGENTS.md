@@ -75,8 +75,8 @@ pytest tests/
 
 ## ✅ Contribution Guidelines
 
-* One module per PR (e.g., `orders`, `products`)
-* Format titles like `[Backend] Add API for Product Create`
+* several module per PR (e.g., `orders`, `products`)
+* Format titles like `[Backend] Add API for Product Create` , 'add frontend'
 * Include:
 
   * Controller logic
@@ -157,7 +157,7 @@ SyntaxError: invalid syntax
 
 * Always respect file boundaries (no HTML in Python, no DB logic in frontend)
 * Agents must generate production-quality, testable code
-* Prefer single-responsibility changes per task
+* dont Prefer single-responsibility changes per task
 
 ---
 
