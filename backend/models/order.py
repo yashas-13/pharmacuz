@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Date
+from datetime import date
 from . import Base
 
 class Order(Base):
@@ -7,3 +8,6 @@ class Order(Base):
     product = Column(String, nullable=False)
     quantity = Column(Integer, nullable=False)
     status = Column(String, nullable=False, default='requested')
+    placed_by = Column(String, nullable=True)
+    target = Column(String, nullable=True)
+    order_date = Column(Date, default=date.today)
