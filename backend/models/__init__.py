@@ -6,4 +6,5 @@ from .pricing_catalog import PricingCatalog
 from .recall import Recall
 from .cfa_stock_movement import CFAStockMovement
 from .offer import Offer
+from .stock_point import StockPoint
 

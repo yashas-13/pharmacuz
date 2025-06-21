@@ -16,6 +16,7 @@ from backend.routes.pack_config import pack_config_bp
 from backend.routes.cfa_stock import cfa_stock_bp
 from backend.routes.analytics import analytics_bp
 from backend.routes.offer import offer_bp
+from backend.routes.stock_point import stock_point_bp
 from backend.database import engine, SessionLocal
 from backend.models import Base
 from backend.models.order import Order  # ensure table registration
@@ -29,6 +30,7 @@ from backend.models.audit_log import AuditLog
 from backend.models.recall import Recall
 from backend.models.cfa_stock_movement import CFAStockMovement
 from backend.models.offer import Offer
+from backend.models.stock_point import StockPoint
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="")
 
@@ -95,6 +97,7 @@ app.register_blueprint(pack_config_bp, url_prefix="/api")
 app.register_blueprint(cfa_stock_bp, url_prefix="/api")
 app.register_blueprint(analytics_bp, url_prefix="/api")
 app.register_blueprint(offer_bp, url_prefix="/api")
+app.register_blueprint(stock_point_bp, url_prefix="/api/manufacturer")
 
 
 @app.route("/")
