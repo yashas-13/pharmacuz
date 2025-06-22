@@ -1,7 +1,7 @@
 
 # 💊 PharmaCuz – Pharmaceutical Distribution and Inventory Management System
 
-**PharmaCuz** is a mobile-first, role-based supply chain management platform for pharmaceutical manufacturers, CFAs, stockists, and retailers. Built using a Python backend and modern frontends, it enables real-time visibility, order processing, and stock traceability across the distribution chain.
+**PharmaCuz** is a mobile-first, role-based supply chain management platform for pharmaceutical manufacturers, CFAs, super stockists, and retailers. Built using a Python backend and modern frontends, it enables real-time visibility, order processing, and stock traceability across the distribution chain.
 
 ---
 
@@ -22,7 +22,7 @@
 - Refill suggestions for fast-moving items
 - QR code scanner for verification
 
-### 🏬 Stockist
+### 🏬 Super Stockist
 - Reorder suggestions and inventory tracking
 - Order placement with autosave cart
 - Order lifecycle timeline (requested → approved → transit → delivered)
@@ -44,7 +44,7 @@ pharmacuz/
 ├── frontend/
 │   ├── mobman.html        # Manufacturer Dashboard (Mobile UI)
 │   ├── cfa.html           # CFA Dashboard
-│   ├── stockist.html      # Stockist Dashboard
+│   ├── stockist.html      # Super Stockist Dashboard
 │   └── assets/            # CSS, JS, Chart.js, Icons
 ├── database/
 │   ├── schema.sql         # DB schema
@@ -125,7 +125,7 @@ Full list in [`product name.txt`](./product%20name.txt)
 # Sample CURL to authenticate
 curl -X POST http://localhost:any/api/auth/login -d 'username=admin&password=admin'
 
-# Get stockist orders
+# Get super stockist orders
 curl -H "Authorization: Bearer <JWT>" http://localhost:any/api/orders/stockist
 ```
 

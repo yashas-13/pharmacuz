@@ -3,7 +3,7 @@
 
 ## 📦 Repository Context
 
-PharmaCuz is a role-based Pharmaceutical Inventory & Distribution Management System. The architecture is modular and mobile-first, with support for offline capabilities and multi-tier supply chain tracking from Manufacturer → CFA → Stockist.
+PharmaCuz is a role-based Pharmaceutical Inventory & Distribution Management System. The architecture is modular and mobile-first, with support for offline capabilities and multi-tier supply chain tracking from Manufacturer → CFA → Super Stockist.
 
 ## 📁 Folder Overview
 
@@ -19,7 +19,7 @@ pharmacuz/
 ├── frontend/
 │   ├── mobman.html       # Manufacturer dashboard UI
 │   ├── cfa.html          # CFA dashboard UI
-│   ├── stockist.html     # Stockist dashboard UI
+│   ├── stockist.html     # Super Stockist dashboard UI
 │   └── assets/           # JS, CSS, Chart.js, etc.
 ├── docs/
 │   ├── README.md         # Overview & setup
@@ -125,7 +125,7 @@ pytest tests/
 ## 💡 Sample Agent Prompt
 
 ```
-Create a new route in `routes/order.py` to fetch all pending orders for a stockist. Use JWT middleware from `middleware/auth.py` and return results using the `OrderModel` in JSON.
+Create a new route in `routes/order.py` to fetch all pending orders for a super stockist. Use JWT middleware from `middleware/auth.py` and return results using the `OrderModel` in JSON.
 ```
 
 ---
@@ -167,5 +167,5 @@ This file will guide intelligent agents (human or AI) to contribute effectively 
 
 ---
 
-Let me know if you want this embedded in a zip, pushed to Git, or split by modules like `agents.manufacturer.md`, `agents.stockist.md`, etc.
+Let me know if you want this embedded in a zip, pushed to Git, or split by modules like `agents.manufacturer.md`, `agents.super_stockist.md`, etc.
 ```
