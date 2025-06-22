@@ -764,7 +764,7 @@
     <div class="overlay"></div>
     <div class="app-container">
         <aside class="sidebar">
-            <h2>Stockist Menu</h2>
+            <h2>Super Stockist Menu</h2>
             <ul>
                 <li><a href="#dashboard" class="nav-link active" data-section="dashboard-section"><i class="fas fa-chart-line"></i> BI Dashboard</a></li>
                 <li><a href="#product-master" class="nav-link" data-section="product-master-section"><i class="fas fa-pills"></i> Product Catalog</a></li>
@@ -784,7 +784,7 @@
                 <div class="dashboard-card">
                     <div class="card-header">
                         <h3>Super Stockist Dashboard</h3>
-                        <span class="info-icon" title="Key metrics for your stockist operations."><i class="fas fa-info-circle"></i></span>
+                        <span class="info-icon" title="Key metrics for your super stockist operations."><i class="fas fa-info-circle"></i></span>
                     </div>
                     <p><em>(This dashboard provides insights relevant to your Super Stockist operations: current inventory, orders placed, and sales data.)</em></p>
                     <div class="dashboard-grid">
@@ -819,7 +819,7 @@
                             </div>
                             <div class="chart-container">
                                 <canvas id="stockistSalesChart"></canvas>
-                                <p class="sr-only">Stockist sales chart placeholder</p>
+                                <p class="sr-only">Super Stockist sales chart placeholder</p>
                             </div>
                         </div>
                     </div>
@@ -1118,7 +1118,7 @@
         </main>
     </div>
 
-    <!-- Modals for Stockist Specific actions -->
+    <!-- Modals for Super Stockist specific actions -->
 
     <!-- Place Order Modal (no separate modal, directly integrated into section for simplicity) -->
     <!-- The form for "Place New Order to CFA" is directly in the section id="place-order-section" -->
@@ -1258,7 +1258,7 @@
                 e.preventDefault();
                 localStorage.removeItem('token');
                 localStorage.removeItem('role');
-                localStorage.removeItem('stockistLastActiveSection'); // Clear Stockist specific state
+                localStorage.removeItem('stockistLastActiveSection'); // Clear Super Stockist specific state
                 window.location.href = 'index.html'; // Redirect to login/home page
             });
 
@@ -1273,7 +1273,7 @@
             document.getElementById('pricingStateRegionStockist').addEventListener('change', loadStockistPricing);
         });
 
-        // Modals are not used for Stockist in this simplified version, as forms are directly on page sections.
+        // Modals are not used for Super Stockist in this simplified version, as forms are directly on page sections.
         // Keeping dummy open/close functions for consistency with original template if needed later.
         function openModal(modalId) {
             // No modals for stockist, forms are inline
@@ -1291,7 +1291,7 @@
                 { id: 'B001XYZ', product_id: 'PROD001', mfg_date: '2024-01-15', exp_date: '2026-01-14', mrp: 50.00, quantity: 5000 }, // Qty here is approximate from CFA for view
                 { id: 'B002ABC', product_id: 'PROD002', mfg_date: '2024-03-01', exp_date: '2026-03-01', mrp: 80.00, quantity: 2000 }
             ],
-            pricing: [ // Stockist only sees relevant pricing for their region
+            pricing: [ // Super Stockist only sees relevant pricing for their region
                 { product_id: 'PROD001', product_name: 'Paracetamol 500mg', state_region: 'Maharashtra', ptr: 35.00, pts: 40.00, effective_date: '2024-04-01' },
                 { product_id: 'PROD002', product_name: 'Amoxicillin 250mg', state_region: 'Maharashtra', ptr: 70.00, pts: 75.00, effective_date: '2024-05-01' }
             ],
@@ -1366,7 +1366,7 @@
             }
         }
 
-        // Load Product Catalog (View Only for Stockist)
+        // Load Product Catalog (View Only for Super Stockist)
         function loadStockistProducts() {
             const body = document.getElementById('stockistProductTableBody');
             if (!body) return;
@@ -1386,7 +1386,7 @@
             });
         }
 
-        // Load Batch Information (View Only for Stockist)
+        // Load Batch Information (View Only for Super Stockist)
         async function loadStockistBatches() {
             const body = document.getElementById('stockistBatchTableBody');
             if (!body) return;
@@ -1407,7 +1407,7 @@
             });
         }
 
-        // Load Pricing (View Only for Stockist)
+        // Load Pricing (View Only for Super Stockist)
         async function loadStockistPricing() {
             const body = document.getElementById('stockistPricingTableBody');
             if (!body) return;
@@ -1433,7 +1433,7 @@
             });
         }
 
-        // Load My Placed Orders (Stockist to CFA)
+        // Load My Placed Orders (Super Stockist to CFA)
         async function loadMyOrders() {
             const body = document.getElementById('myOrdersTableBody');
             if (!body) return;
@@ -1466,7 +1466,7 @@
             document.getElementById('total-orders-placed').textContent = data.length;
         }
 
-        // Load Stockist's Own Stock
+        // Load Super Stockist's Own Stock
         function loadStockistMyStock() {
             const body = document.getElementById('stockistMyStockTableBody');
             if (!body) return;
@@ -1488,7 +1488,7 @@
             });
         }
 
-        // Load Audit Logs for Stockist
+        // Load Audit Logs for Super Stockist
         async function loadStockistAuditLogs() {
             const body = document.getElementById('stockistAuditLogTableBody');
             if (!body) return;

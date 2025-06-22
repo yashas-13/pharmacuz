@@ -1089,8 +1089,8 @@
                     </div>
                      <div class="filter-bar">
                         <input type="text" placeholder="Search Product/Batch..." aria-label="Search product or batch">
-                        <select aria-label="Filter by CFA or Stockist">
-                            <option>Filter by CFA/Stockist</option>
+                        <select aria-label="Filter by CFA or Super Stockist">
+                            <option>Filter by CFA/Super Stockist</option>
                             <option>CFA01 - Mumbai</option>
                             <option>SS005 - Pune</option>
                         </select>
@@ -1203,13 +1203,13 @@
                             <textarea id="recallReason" name="recallReason" rows="3" required></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="recallScope">Scope (Stockists to notify):</label>
+                            <label for="recallScope">Scope (Super Stockists to notify):</label>
                             <select id="recallScope" name="recallScope">
-                                <option value="all">All Stockists Holding Batch</option>
-                                <option value="select">Select Specific Stockists</option>
+                                <option value="all">All Super Stockists Holding Batch</option>
+                                <option value="select">Select Specific Super Stockists</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-danger"><i class="fas fa-bell"></i> Initiate Recall & Notify Stockists</button>
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-bell"></i> Initiate Recall & Notify Super Stockists</button>
                     </form>
                 </div>
                 <div class="card">
@@ -1614,7 +1614,7 @@
                     <label for="newRole">Role:</label>
                     <select id="newRole" required>
                         <option value="cfa">CFA</option>
-                        <option value="super_stockist">Stockist</option>
+                        <option value="super_stockist">Super Stockist</option>
                     </select>
                 </div>
                 <div class="modal-footer">

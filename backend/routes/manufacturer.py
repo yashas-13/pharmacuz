@@ -285,7 +285,7 @@ def update_pack_config(config_id):
 @manufacturer_bp.route("/users", methods=["GET", "POST"])
 @role_required("manufacturer")
 def manage_users():
-    """Create or list CFA and stockist users."""
+    """Create or list CFA and super stockist users."""
     session: Session = SessionLocal()
     if request.method == "POST":
         data = request.json or {}

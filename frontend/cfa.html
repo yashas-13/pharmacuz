@@ -775,7 +775,7 @@
                 <li><a href="#outgoing-orders" class="nav-link" data-section="outgoing-orders-section"><i class="fas fa-shipping-fast"></i> Outgoing Orders (Mfr)</a></li>
                 <li><a href="#stock-management" class="nav-link" data-section="stock-management-section"><i class="fas fa-warehouse"></i> My Stock Management</a></li>
                 <li><a href="#grn" class="nav-link" data-section="grn-section"><i class="fas fa-file-alt"></i> GRN</a></li>
-                <li><a href="#stockist-visibility" class="nav-link" data-section="stockist-visibility-section"><i class="fas fa-eye"></i> Downstream Stock Visibility</a></li>
+                <li><a href="#stockist-visibility" class="nav-link" data-section="stockist-visibility-section"><i class="fas fa-eye"></i> Downstream Super Stock Visibility</a></li>
                 <li><a href="#audit-trail" class="nav-link" data-section="audit-trail-section"><i class="fas fa-clipboard-list"></i> Audit & Compliance</a></li>
             </ul>
         </aside>
@@ -988,7 +988,7 @@
                             <thead>
                                 <tr>
                                     <th>Order ID</th>
-                                    <th>From Stockist</th>
+                                    <th>From Super Stockist</th>
                                     <th>Product</th>
                                     <th>Quantity</th>
                                     <th>Order Date</th>
@@ -1036,7 +1036,7 @@
                         <h3>My Stock Management (CFA Location)</h3>
                     </div>
                     <button class="btn btn-primary" onclick="openModal('cfaAddStockModal')"><i class="fas fa-plus-circle"></i> Receive Stock from Manufacturer</button>
-                    <button class="btn btn-secondary" onclick="openModal('cfaDispatchStockModal')"><i class="fas fa-truck"></i> Dispatch Stock to Stockist</button>
+                    <button class="btn btn-secondary" onclick="openModal('cfaDispatchStockModal')"><i class="fas fa-truck"></i> Dispatch Stock to Super Stockist</button>
                     <div class="filter-bar">
                         <input type="text" placeholder="Search Product/Batch..." aria-label="Search product or batch">
                         <select aria-label="Filter by Product Category">
@@ -1262,7 +1262,7 @@
 
     <div id="cfaDispatchStockModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h3>Dispatch Stock to Stockist</h3><span class="close-btn" onclick="closeModal('cfaDispatchStockModal')">&times;</span></div>
+            <div class="modal-header"><h3>Dispatch Stock to Super Stockist</h3><span class="close-btn" onclick="closeModal('cfaDispatchStockModal')">&times;</span></div>
             <form id="dispatchStockForm">
                 <div class="form-group">
                     <label for="dispatchProductId">Product:</label>
@@ -1311,7 +1311,7 @@
         </a>
         <a href="#stockist-visibility" class="bottom-nav-item" data-section="stockist-visibility-section">
             <i class="fas fa-eye"></i>
-            <span>Stockists</span>
+            <span>Super Stockists</span>
         </a>
         <a href="#audit-trail" class="bottom-nav-item" data-section="audit-trail-section">
             <i class="fas fa-clipboard-list"></i>
@@ -1702,7 +1702,7 @@
             });
         }
 
-        // Load Downstream Stockist Visibility (CFA can see SS stock)
+        // Load Downstream Super Stockist Visibility (CFA can see SS stock)
         async function loadDownstreamStockVisibility() {
             const body = document.getElementById('downstreamStockTableBody');
             if (!body) return;
